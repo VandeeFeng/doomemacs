@@ -5,10 +5,11 @@
 
 神的编辑器还是得上手体验体验。
 
-doomemac 官方文档：
+官方文档：
 
 -  [GitHub - doomemacs/doomemacs: An Emacs framework for the stubborn martian hacker](https://github.com/doomemacs/doomemacs/tree/master)  
 -  [doomemacs/docs/getting_started.org at master · doomemacs/doomemacs · GitHub](https://github.com/doomemacs/doomemacs/blob/master/docs/getting_started.org#on-windows) 
+-  [GNU Emacs Manuals Online](https://www.gnu.org/software/emacs/manual/)
 
 [Emacs China](https://emacs-china.org/)  论坛
 
@@ -21,9 +22,11 @@ To install, make a backup then clone this repo to ~/.config/doom
 
 
 
-# Env
+# Settings
 
-## Go
+## Language
+
+### Go
 
 - https://go.dev/doc/ go官方文档
 
@@ -92,7 +95,7 @@ To install, make a backup then clone this repo to ~/.config/doom
   > :tools (lsp)
 
 -  执行~/.emacs.d/bin/doom sync 或者 (SPC h r r) 
-## Python
+### Python
 配置init.el 
 
 ```
@@ -120,5 +123,15 @@ packages.el  add `(package! python-black)`
 - [GitHub - purcell/emacs.d: An Emacs configuration bundle with batteries included](https://github.com/purcell/emacs.d)  
 
 - [Doom Emacs On Day One (Learn These Things FIRST!)](https://www.youtube.com/watch?v=37H7bD-G7nE)
+
+- [GitHub - redguardtoo/emacs.d: Fast and robust Emacs setup.](https://github.com/redguardtoo/emacs.d)  ⭐️
+
+- [GitHub - MatthewZMD/.emacs.d: M-EMACS, a full-featured GNU Emacs configuration distribution](https://github.com/MatthewZMD/.emacs.d)  ⭐️
+
+- [技巧分享：在 emacs 中获取 firefox 当前标签页并生成 org link](https://emacs-china.org/t/emacs-firefox-org-link/23661)
+
+- [史上最全Vim快捷键键位图（入门到进阶） | 菜鸟教程](https://www.runoob.com/w3cnote/all-vim-cheatsheat.html)
+
+- [Doom Emacs 配置 - Paradigm X](https://soulhacker.me/posts/doom-emacs-config/)
 
     
