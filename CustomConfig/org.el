@@ -1,15 +1,30 @@
-;;; OrgSettings.el -*- lexical-binding: t; -*-
+;;; org.el -*- lexical-binding: t; -*-
+;;;
+;;;
 ;;;
 ;;;
 ;;;
 
+
+
+(setq org-roam-dailies-directory "~/Vandee/pkm/Journals/")
+(setq org-export-with-toc nil) ;;禁止生成toc
 (use-package org-roam
   :ensure t
-  ;;:demand t  ;; Ensure org-roam is loaded by default
+  :demand t  ;; Ensure org-roam is loaded by default
   :init
   (setq org-roam-v2-ack t)
   :custom
-  (org-roam-directory "~/Vandee/org/roam/")
+  (org-roam-dailies-capture-templates
+   '(("d" "default" plain "* %<%Y-%m-%d>\n** TODO\n- \n** Inbox\n- %?"
+      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: ${title}\n"))))
+  (org-roam-directory "~/Vandee/pkm/roam/")
+  (org-roam-capture-templates
+   `(("d" "default" plain "%?"
+      :if-new (file+head "${slug}.org"
+                         "${title}\n#+UID: %<%Y%m%d%H%M%S>\n#+filetags: \n#+type: \n#+date: %<%Y-%m-%d>")
+      :unnarrowed t))
+   )
   (org-roam-completion-everywhere t)
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
@@ -17,7 +32,7 @@
          ("C-c n I" . org-roam-node-insert-immediate)
          ("C-c n c" . org-roam-capture)
          ("C-c n j" . org-roam-dailies-capture-today)
-         ("C-c n p" . my/org-roam-find-project)
+         ("C-c n n" . my/org-roam-find-notes)
          ("C-c n t" . my/org-roam-capture-task)
          ("C-c n b" . my/org-roam-capture-inbox)
          :map org-mode-map
@@ -30,12 +45,9 @@
   :config
   (require 'org-roam-dailies) ;; Ensure the keymap is available
   (org-roam-db-autosync-mode)
-  (setq org-roam-capture-templates
-        `(("d" "default" plain "%?"
-           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                              "${title}\n#+tags:\n\n")
-           :unnarrowed t)))
   (require 'org-roam-protocol))
+
+
 
 (defun org-roam-node-insert-immediate (arg &rest args)
   (interactive "P")
@@ -43,6 +55,25 @@
         (org-roam-capture-templates (list (append (car org-roam-capture-templates)
                                                   '(:immediate-finish t)))))
     (apply #'org-roam-node-insert args)))
+
+(defun my/org-roam-filter-by-tag (tag-name)
+  (lambda (node)
+    (member tag-name (org-roam-node-tags node))))
+
+(defun my/org-roam-list-notes-by-tag (tag-name)
+  (mapcar #'org-roam-node-file
+          (seq-filter
+           (my/org-roam-filter-by-tag tag-name)
+           (org-roam-node-list))))
+
+
+(defun my/org-roam-capture-inbox ()
+  (interactive)
+  (org-roam-capture- :node (org-roam-node-create)
+                     :templates '(("i" "inbox" plain "* %?"
+                                   :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
+
+
 
 
 ;; 需要这个功能的 Org 笔记在 header 里加入下面一行即可（在笔记的前18行都可以）。 #+last_modified: [ ]
@@ -66,3 +97,14 @@
           org-roam-ui-update-on-save t
           org-roam-ui-open-on-start t))
   )
+
+
+;; For users that prefer using a side-window for the org-roam buffer, the following example configuration should provide a good starting point:对于喜欢使用侧窗口作为 org-roam 缓冲区的用户，以下示例配置应该提供一个很好的起点：
+(add-to-list 'display-buffer-alist
+             '("\\*org-roam\\*"
+               (display-buffer-in-side-window)
+               (side . right)
+               (slot . 0)
+               (window-width . 0.33)
+               (window-parameters . ((no-other-window . t)
+                                     (no-delete-other-windows . t)))))

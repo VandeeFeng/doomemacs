@@ -2,17 +2,17 @@
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;-------------------------------------------------------------------------------------------
 ;;
 ;; globl settings
 ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;-------------------------------------------------------------------------------------------
 
 (global-auto-revert-mode t)  ;; Automatically show changes if the file has changed
 
 ;; 修改默认键位映射，取消command键位
 (setq mac-option-modifier 'meta)
-(setq mac-command-modifier 'non)
+;;(setq mac-command-modifier 'non)
 ;; window size
 ;;(pushnew! initial-frame-alist '(width . 180) '(height . 55))
 ;; (add-hook 'window-setup-hook #'toggle-frame-maximized)
@@ -86,11 +86,11 @@
  all-the-icons-scale-factor 1.0
  )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;-------------------------------------------------------------------------------------------
 ;;
 ;; packages
 ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;-------------------------------------------------------------------------------------------
 
 
 ;; 获取网页标题
@@ -98,7 +98,7 @@
 (defun chinhant-grab-mac-link ()
   "获得并插入 Chrome 页面的 Markdown 链接."
   (interactive)
-  (insert (grab-mac-link 'firefox 'markdown)))
+  (insert (grab-mac-link 'firefox 'org)))
 
 (global-set-key (kbd "C-c m") 'chinhant-grab-mac-link)
 
@@ -114,31 +114,8 @@
                  :stream t
                  :models '("llama3:latest")))
 
-;; evil settings
-;; Expands to: (elpaca evil (use-package evil :demand t))
-(use-package evil
-  :init      ;; tweak evil's configuration before loading it
-  (setq evil-want-integration t  ;; This is optional since it's already set to t by default.
-        evil-want-keybinding nil
-        evil-vsplit-window-right t
-        evil-split-window-below t
-        evil-undo-system 'undo-redo)  ;; Adds vim-like C-r redo functionality
-  (evil-mode))
 
-
-(use-package evil-collection
-  :after evil
-  :config
-  ;; Do not uncomment this unless you want to specify each and every mode
-  ;; that evil-collection should works with.  The following line is here 
-  ;; for documentation purposes in case you need it.  
-  ;; (setq evil-collection-mode-list '(calendar dashboard dired ediff info magit ibuffer))
-  (add-to-list 'evil-collection-mode-list 'help) ;; evilify help mode
-  (evil-collection-init))
-
-(use-package evil-tutor)
-
-;; Using RETURN to follow links in Org/Evil 
+;; Using RETURN to follow links in Org/Evil
 ;; Unmap keys in 'evil-maps if not done, (setq org-return-follows-link t) will not work
 (with-eval-after-load 'evil-maps
   (define-key evil-motion-state-map (kbd "SPC") nil)

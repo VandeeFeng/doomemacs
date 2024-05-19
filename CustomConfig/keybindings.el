@@ -8,6 +8,7 @@
 ;;
 
 (use-package general
+  :init
   :config
   (general-evil-setup)
 
@@ -30,10 +31,21 @@
     "v t" '(chinhant-grab-mac-link :wk "网页文章标题获取")
     "v g s" '(gptel-send :wk "gpt发送")
     "v g n" '(gptel :wk "gpt新buffer")
-    "v o n" '(org-roam-capture :wk "org-roam-capture")
+    ;; "v o n" '(org-roam-capture :wk "org-roam-capture")
+    ;; "v o d" '(org-roam-dailies-capture-today :wk "org-roam-dailies-capture-today")
+
     )
 
-
+  (vf/leader-keys
+    "n" '(:ignore t :wk "notes")
+    "n j" '(org-roam-dailies-capture-today :wk "org-roam-dailies-capture-today")
+    "n i" '(org-roam-node-insert :wk "org-roam-node-insert")
+    "n I" '(org-roam-node-insert-immediate :wk "org-roam-node-insert-immediate")
+    "n n" '(org-roam-capture :wk "org-roam-capture")
+    "n f" '(org-roam-node-find :wk "org-roam-node-find")
+    "n e" '(org-export-dispatch :wk "org-export-dispatch")
+    "n u" '(org-roam-ui-open :wk "org-roam-ui-open")
+    )
 
   (vf/leader-keys
     "b" '(:ignore t :wk "Bookmarks/Buffers")

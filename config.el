@@ -6,7 +6,7 @@
 ;;读取其他配置
 (load! "CustomConfig/keybindings")
 (load! "CustomConfig/custom")
-(load! "CustomConfig/OrgSettings")
+(load! "CustomConfig/org")
 (load! "CustomConfig/languages")
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
@@ -45,7 +45,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Vandee/org/orgNotes/")
+(setq org-directory "~/Vandee/org/notes/")
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
