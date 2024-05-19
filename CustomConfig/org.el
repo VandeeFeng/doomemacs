@@ -22,7 +22,7 @@
   (org-roam-capture-templates
    `(("d" "default" plain "%?"
       :if-new (file+head "${slug}.org"
-                         "${title}\n#+UID: %<%Y%m%d%H%M%S>\n#+filetags: \n#+type: \n#+date: %<%Y-%m-%d>")
+                         "${title}\n#+UID: %<%Y%m%d%H%M%S>\n#+filetags: \n#+type: \n#+date: %<%Y-%m-%d>\n")
       :unnarrowed t))
    )
   (org-roam-completion-everywhere t)
