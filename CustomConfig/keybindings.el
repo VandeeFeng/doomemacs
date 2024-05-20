@@ -15,9 +15,9 @@
   ;; set up 'SPC' as the global leader key
   (general-create-definer vf/leader-keys
     :states '(normal  visual  emacs)
-    :keymaps 'override
+    :keymaps 'override-global-map
     :prefix "SPC") ;; set leader
-
+  ;;:global-prefix "M-SPC") ;; access leader in insert mode
 
   (vf/leader-keys
     "SPC" '(counsel-M-x :wk "Counsel M-x")

@@ -58,6 +58,8 @@
 (package! gptel)
 (package! evil-tutor)
 (package! grab-mac-link)
+(package! rime)
+(package! sis)
 ;; (package! perspective)
 ;; (package! evil-tutor)
 ;; (package! evil-collection)

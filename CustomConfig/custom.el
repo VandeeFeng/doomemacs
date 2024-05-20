@@ -10,9 +10,14 @@
 
 (global-auto-revert-mode t)  ;; Automatically show changes if the file has changed
 
+;;键位绑定，解绑，转换
 ;; 修改默认键位映射，取消command键位
 (setq mac-option-modifier 'meta)
-;;(setq mac-command-modifier 'non)
+;;(setq mac-command-modifier 'none)
+;;(global-set-key (kbd "M-z") nil)
+
+
+
 ;; window size
 ;;(pushnew! initial-frame-alist '(width . 180) '(height . 55))
 ;; (add-hook 'window-setup-hook #'toggle-frame-maximized)
@@ -56,6 +61,8 @@
   '(aw-leading-char-face
     :foreground "white" :background "red"
     :weight bold :height 1.5 :box (:line-width 10 :color "red")))
+
+
 ;;dashboard
 ;; logo修改
 (setq fancy-splash-image (concat doom-private-dir "images/鸦.png"))
@@ -63,13 +70,13 @@
   (insert "\n" (+doom-dashboard--center +doom-dashboard--width "Lust for life")))
 
 ;;快捷栏修改 https://discourse.doomemacs.org/t/how-to-change-your-splash-screen/57
-
-
+;; ref: https://discourse.doomemacs.org/t/how-to-change-your-splash-screen/57
 (assoc-delete-all "Recently opened files" +doom-dashboard-menu-sections)
 (assoc-delete-all "Open documentation" +doom-dashboard-menu-sections)
 (assoc-delete-all "Open org-agenda" +doom-dashboard-menu-sections)
 (assoc-delete-all "Jump to bookmark" +doom-dashboard-menu-sections)
 (assoc-delete-all "Reload last session" +doom-dashboard-menu-sections)
+
 
 (setq-default
  window-combination-resize t
@@ -104,8 +111,6 @@
 
 
 
-;;
-;;
 ;; gtpel 设置默认ollama 模型
 (setq
  gptel-model "llama3:latest"
@@ -115,6 +120,29 @@
                  :models '("llama3:latest")))
 
 
+;; evil settings
+
+(use-package evil
+  :init      ;; tweak evil's configuration before loading it
+  (setq evil-want-integration t  ;; This is optional since it's already set to t by default.
+        evil-want-keybinding nil
+        evil-vsplit-window-right t
+        evil-split-window-below t
+        evil-undo-system 'undo-redo)  ;; Adds vim-like C-r redo functionality
+  (evil-mode))
+
+(use-package evil-collection
+  :after evil
+  :config
+  ;; Do not uncomment this unless you want to specify each and every mode
+  ;; that evil-collection should works with.  The following line is here
+  ;; for documentation purposes in case you need it.
+  ;; (setq evil-collection-mode-list '(calendar dashboard dired ediff info magit ibuffer))
+  (add-to-list 'evil-collection-mode-list 'help) ;; evilify help mode
+  (evil-collection-init))
+
+(use-package evil-tutor)
+
 ;; Using RETURN to follow links in Org/Evil
 ;; Unmap keys in 'evil-maps if not done, (setq org-return-follows-link t) will not work
 (with-eval-after-load 'evil-maps
@@ -123,6 +151,7 @@
   (define-key evil-motion-state-map (kbd "TAB") nil))
 ;; Setting RETURN key in org-mode to follow links
 (setq org-return-follows-link  t)
+
 
 
 ;; buffer
@@ -215,7 +244,7 @@
   :init (global-flycheck-mode))
 
 
-;; which-key
+;; which-key  https://emacs-china.org/t/doom/13654/5
 (use-package which-key
   :init
   (which-key-mode 1)
@@ -233,6 +262,8 @@
 	which-key-idle-delay 0.8
 	which-key-max-description-length 25
 	which-key-allow-imprecise-window-fit nil
+        which-key-idle-delay 0.4
+        which-key-idle-secondary-delay 0.01
 	which-key-separator " → " ))
 
 

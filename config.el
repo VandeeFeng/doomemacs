@@ -8,6 +8,7 @@
 (load! "CustomConfig/custom")
 (load! "CustomConfig/org")
 (load! "CustomConfig/languages")
+(load! "CustomConfig/chinese")
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets. It is optional.
