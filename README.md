@@ -79,6 +79,34 @@ $ brew install emacs-plus@26 [options] # install Emacs 26
   - https://emacs-china.org/t/doom-emacs-rime/26094
   - https://manateelazycat.github.io/2023/09/11/fcitx-best-config/
 
+### Misc
+
+- 调整窗口大小
+
+  ```
+  
+  (if (not (eq window-system nil))
+      (progn
+        ;; top, left ... must be integer
+        (add-to-list 'default-frame-alist
+                     (cons 'top  (/ (x-display-pixel-height) 15))) ;; 调整数字设置距离上下左右的距离
+        (add-to-list 'default-frame-alist
+                     (cons 'left (/ (x-display-pixel-width) 10)))
+        (add-to-list 'default-frame-alist
+                     (cons 'height (/ (* 4 (x-display-pixel-height))
+                                      (* 6 (frame-char-height)))))
+        (add-to-list 'default-frame-alist
+                     (cons 'width (/ (* 4 (x-display-pixel-width))
+                                     (* 6 (frame-char-width)))))))
+  
+  ```
+
+  
+
+- 
+
+
+
 ## Language
 
 ### Go
