@@ -50,7 +50,7 @@
        (vc-gutter +pretty) ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        window-select     ; visually switch windows
-       workspaces        ; tab emulation, persistence & separate workspaces
+       ;;workspaces        ; tab emulation, persistence & separate workspaces
        ;;zen               ; distraction-free coding or writing
 
        :editor
@@ -177,7 +177,7 @@
        yaml              ; JSON, but readable
        ;;zig               ; C, but simpler
 
-       :email
+       ;;:email
        ;;(mu4e +org +gmail)
        ;;notmuch
        ;;(wanderlust +gmail)

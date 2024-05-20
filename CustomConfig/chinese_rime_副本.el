@@ -3,11 +3,12 @@
 ;; https://github.com/DogLooksGood/emacs-rime
 (setq rime-user-data-dir "~/.config/rime/")
 (use-package rime
+  :ensure t
   :custom
   (default-input-method "rime")
   :bind
   (:map rime-mode-map
-        ("M-." . 'rime-send-keybinding)))
+        ("C-`" . 'rime-send-keybinding)))
 
 
 (defun rime-evil-escape-advice (orig-fun key)
@@ -64,7 +65,7 @@
 
 
 ;; smart-input https://github.com/laishulu/emacs-smart-input-source
-(sis-ism-lazyman-config nil "rime" 'native)
+;;(sis-ism-lazyman-config nil "rime" 'native)
 ;; Your English input source MAY NOT be the default one. Use command sis-get in Emacs to get the correct one.您的英文输入源可能不是默认输入源。在 Emacs 中使用命令 sis-get 来获取正确的值。
 (use-package sis
   ;; :hook
@@ -74,15 +75,15 @@
 
   :init
   (progn
-    (setq smart-input-source-english t)
+    (setq smart-input-source-english nil)
     (setq-default smart-input-source-other "rime")
     (setq smart-input-source-do-get (lambda() current-input-method))
     (setq smart-input-source-do-set (lambda(source) (set-input-method source))))
 
   :config
-
+  (sis-ism-lazyman-config nil "rime" 'native)
   ;; enable the /cursor color/ mode
-  (sis-global-cursor-color-mode nil)
+  (sis-global-cursor-color-mode t)
   ;; enable the /respect/ mode
   (sis-global-respect-mode t)
   ;; enable the /context/ mode for all buffers

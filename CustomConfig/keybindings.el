@@ -31,6 +31,9 @@
     "v t" '(chinhant-grab-mac-link :wk "网页文章标题获取")
     "v g s" '(gptel-send :wk "gpt发送")
     "v g n" '(gptel :wk "gpt新buffer")
+    "v j" '((lambda () (interactive)
+              (find-file "~/Vandee/pkm/Journals"))
+            :wk "go to Journals")
     ;; "v o n" '(org-roam-capture :wk "org-roam-capture")
     ;; "v o d" '(org-roam-dailies-capture-today :wk "org-roam-dailies-capture-today")
 

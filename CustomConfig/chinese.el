@@ -1,86 +1,58 @@
-;;; chinese.el -*- lexical-binding: t; -*
-;;;
+;;; chinese.el -*- lexical-binding: t; -*-
 
 
 
+;; smart-input https://github.com/laishulu/emacs-smart-input-source
+(sis-ism-lazyman-config nil "rime" 'native)
+(use-package sis
+  ;; :hook
+  ;; enable the /context/ and /inline region/ mode for specific buffers
+  ;; (((text-mode prog-mode) . sis-context-mode)
+  ;;  ((text-mode prog-mode) . sis-inline-mode))
 
+  :config
+  ;; For MacOS
+  (sis-ism-lazyman-config
 
-;; https://github.com/tumashu/pyim
-(require 'pyim)
-(require 'pyim-basedict)
-(require 'pyim-cregexp-utils)
+   ;; English input source may be: "ABC", "US" or another one.
+   ;; "com.apple.keylayout.ABC"
+   "com.apple.keylayout.ABC"
 
-;; 如果使用 popup page tooltip, 就需要加载 popup 包。
-;; (require 'popup nil t)
-;; (setq pyim-page-tooltip 'popup)
+   ;; Other language input source: "rime", "sogou" or another one.
+   ;; "im.rime.inputmethod.Squirrel.Rime"
+   "com.rime.inputmethod.Squirrel.Rime")
 
-;; 如果使用 pyim-dregcache dcache 后端，就需要加载 pyim-dregcache 包。
-;; (require 'pyim-dregcache)
-;; (setq pyim-dcache-backend 'pyim-dregcache)
+  ;; enable the /cursor color/ mode
+  (sis-global-cursor-color-mode t)
+  ;; enable the /respect/ mode
+  (sis-global-respect-mode t)
+  ;; enable the /context/ mode for all buffers
+  (sis-global-context-mode t)
+  ;; enable the /inline english/ mode for all buffers
+  (sis-global-inline-mode t)
+  )
 
-;; 加载 basedict 拼音词库。
-(pyim-basedict-enable)
+;; https://whatacold.io/zh-cn/blog/2022-09-11-emacs-smart-input-source-rime/
+;;  对功能的影响就是，如果 w/sis--guess-context-by-prev-chars 出错了，会导致自动中英文切换功能失效。遇到这种情况不要慌，执行 M-x sis-global-context-mode 两次 来让 sis 把 hook 重新加上就好了。
+(defun w/sis--guess-context-by-prev-chars (backward-chars forward-chars)
+  "Detect the context based on the 2 chars before the point.
 
-;; 将 Emacs 默认输入法设置为 pyim.
-(setq default-input-method "pyim")
+It has a side effect of deleting the previous whitespace if
+there is a whitespace/newline and a comma before the point."
+  (when (and (>= (point) 3)
+             sis-context-mode
+             (memq major-mode '(org-mode)))
+    (let ((prev (preceding-char))
+          (pprev (char-before (1- (point)))))
+      (cond
+       ((and (or (char-equal ?  pprev) (char-equal 10 pprev)) ; a whitespace or newline
+             (char-equal ?, prev))
+        (delete-char -1)                ; side effect: delete the second whitespace
+        'other)
+       ((string-match-p "[[:ascii:]]" (char-to-string (preceding-char)))
+        'english)
+       (t 'other)))))
 
-;; 显示 5 个候选词。
-(setq pyim-page-length 5)
+(setq sis-context-detectors '(w/sis--guess-context-by-prev-chars))
 
-;; 金手指设置，可以将光标处的编码（比如：拼音字符串）转换为中文。
-(global-set-key (kbd "M-j") 'pyim-convert-string-at-point)
-
-;; 按 "C-<return>" 将光标前的 regexp 转换为可以搜索中文的 regexp.
-(define-key minibuffer-local-map (kbd "C-<return>") 'pyim-cregexp-convert-at-point)
-
-;; 设置 pyim 默认使用的输入法策略，我使用全拼。
-(pyim-default-scheme 'xiaohe-shuangpin)
-
-;;(pyim-default-scheme 'quanpin)
-;; (pyim-default-scheme 'wubi)
-;; (pyim-default-scheme 'cangjie)
-
-;; 设置 pyim 是否使用云拼音
-;; (setq pyim-cloudim 'baidu)
-
-;; 设置 pyim 探针
-;; 设置 pyim 探针设置，这是 pyim 高级功能设置，可以实现 *无痛* 中英文切换 :-)
-;; 我自己使用的中英文动态切换规则是：
-;; 1. 光标只有在注释里面时，才可以输入中文。
-;; 2. 光标前是汉字字符时，才能输入中文。
-;; 3. 使用 M-j 快捷键，强制将光标前的拼音字符串转换为中文。
-;; (setq-default pyim-english-input-switch-functions
-;;               '(pyim-probe-dynamic-english
-;;                 pyim-probe-isearch-mode
-;;                 pyim-probe-program-mode
-;;                 pyim-probe-org-structure-template))
-
-;; (setq-default pyim-punctuation-half-width-functions
-;;               '(pyim-probe-punctuation-line-beginning
-;;                 pyim-probe-punctuation-after-punctuation))
-
-
-
-;; 开启代码搜索中文功能（比如拼音，五笔码等）
-(pyim-isearch-mode 1)
-
-
-;; 让 ivy 支持拼音搜索候选项功能
-(require 'pyim-cregexp-utils)
-
-(setq ivy-re-builders-alist
-      '((t . pyim-cregexp-ivy)))
-
-;; 让 avy 支持拼音搜索
-(with-eval-after-load 'avy
-  (defun my-avy--regex-candidates (fun regex &optional beg end pred group)
-    (let ((regex (pyim-cregexp-build regex)))
-      (funcall fun regex beg end pred group)))
-  (advice-add 'avy--regex-candidates :around #'my-avy--regex-candidates))
-
-;; 让 vertico, selectrum 等补全框架，通过 orderless 支持拼音搜索候选项功能。
-(defun my-orderless-regexp (orig-func component)
-  (let ((result (funcall orig-func component)))
-    (pyim-cregexp-build result)))
-
-(advice-add 'orderless-regexp :around #'my-orderless-regexp)
+(setq sis-context-hooks '(post-command-hook)) ; may hurt performance

@@ -24,6 +24,61 @@ To install, make a backup then clone this repo to ~/.config/doom
 
 # Settings
 
+## tips
+
+### emacs-plus option 
+
+https://github.com/d12frosted/homebrew-emacs-plus
+
+```
+$ brew tap d12frosted/emacs-plus
+$ brew install emacs-plus    [options] # install the latest release (Emacs 29)
+$ brew install emacs-plus@30 [options] # install Emacs 30 (master)
+$ brew install emacs-plus@29 [options] # install Emacs 29
+$ brew install emacs-plus@28 [options] # install Emacs 28
+$ brew install emacs-plus@27 [options] # install Emacs 27
+$ brew install emacs-plus@26 [options] # install Emacs 26
+```
+
+
+
+  --with-native-comp
+
+### doom emacs 
+
+- The `package!` macro possesses a `:disable` property:
+   `package!` 宏拥有 `:disable` 属性：
+
+  ```
+  (package! irony :disable t)
+  (package! rtags :disable t)
+  ```
+
+  ​    
+
+  Once a package is disabled, `use-package!` and `after!` blocks for it will be  ignored, and the package is removed the next time you run `bin/doom sync`. Use  this to disable Doom’s packages that you don’t want or need.
+  一旦禁用某个包，它的 `use-package!` 和 `after!` 块将被忽略，并且该包将在您下次运行 `bin/doom sync` 时被删除。使用它来禁用您不想要或不需要的 Doom 软件包。
+
+  There is also the `disable-packages!` macro for conveniently disabling multiple  packages:
+  还有 `disable-packages!` 宏可以方便地禁用多个包：
+
+  ```
+  (disable-packages! irony rtags)
+  ```
+
+  ​    
+
+  > **IMPORTANT:** Run `bin/doom sync` whenever you modify packages.el files to    ensure your changes take effect.
+  > 重要提示：每当您修改packages.el 文件时，请运行 `bin/doom sync` 以确保更改生效。
+
+### 输入法
+
+- rime配置
+  - https://emacs-china.org/t/emacs-rime/14654
+  - https://emacs-china.org/t/rime-el/11939/4
+  - https://emacs-china.org/t/doom-emacs-rime/26094
+  - https://manateelazycat.github.io/2023/09/11/fcitx-best-config/
+
 ## Language
 
 ### Go
