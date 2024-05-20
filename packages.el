@@ -62,6 +62,6 @@
 ;;(package! sis)
 ;; (package! perspective)
 ;; (package! evil-tutor)
-;; (package! evil-collection)
+(package! evil-collection)
 (package! rime :disable t)
 (package! sis :disable t)

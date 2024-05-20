@@ -5,7 +5,7 @@
 ;;
 ;;读取其他配置
 (load! "CustomConfig/keybindings")
-(load! "CustomConfig/custom")
+(load! "CustomConfig/misc")
 (load! "CustomConfig/org")
 (load! "CustomConfig/languages")
 ;;(load! "CustomConfig/chinese")

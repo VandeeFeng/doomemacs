@@ -44,6 +44,24 @@ $ brew install emacs-plus@26 [options] # install Emacs 26
 
   --with-native-comp
 
+增加图标：
+
+```
+To link the application to default Homebrew App location:
+  osascript -e 'tell application "Finder" to make alias file to posix file "/opt/homebrew/opt/emacs-plus@28/Emacs.app" at POSIX file "/Applications" with properties {name:"Emacs.app"}'
+
+Your PATH value was injected into Emacs.app/Contents/Info.plist
+
+Report any issues to https://github.com/d12frosted/homebrew-emacs-plus
+
+To start d12frosted/emacs-plus/emacs-plus@28 now and restart at login:
+  brew services start d12frosted/emacs-plus/emacs-plus@28
+Or, if you don't want/need a background service you can just run:
+  /opt/homebrew/opt/emacs-plus@28/bin/emacs --fg-daemon
+```
+
+
+
 ### doom emacs 
 
 - The `package!` macro possesses a `:disable` property:

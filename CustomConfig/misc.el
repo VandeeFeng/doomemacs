@@ -1,4 +1,4 @@
-;;; custom.el -*- lexical-binding: t; -*-
+;;; misc.el -*- lexical-binding: t; -*-
 
 
 
@@ -16,7 +16,7 @@
 ;;(setq mac-command-modifier 'none)
 ;;(global-set-key (kbd "M-z") nil)
 
-
+;;(global-unset-key (kbd "SPC n n"))
 
 ;; window size
 ;;(pushnew! initial-frame-alist '(width . 180) '(height . 55))
@@ -99,7 +99,6 @@
 ;;
 ;;-------------------------------------------------------------------------------------------
 
-
 ;; 获取网页标题
 (global-subword-mode t)
 (defun chinhant-grab-mac-link ()
@@ -133,6 +132,8 @@
 
 (use-package evil-collection
   :after evil
+  :custom
+  (evil-collection-setup-minibuffer t) ;;如果您想在迷你缓冲区中启用 Evil，则必须通过将 evil-collection-setup-minibuffer 自定义为 t 来显式打开它。一些与迷你缓冲区相关的软件包（例如 Helm）依赖于此选项。
   :config
   ;; Do not uncomment this unless you want to specify each and every mode
   ;; that evil-collection should works with.  The following line is here
