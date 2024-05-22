@@ -16,7 +16,7 @@
 ;;(setq mac-command-modifier 'none)
 ;;(global-set-key (kbd "M-z") nil)
 
-;;(global-unset-key (kbd "SPC n n"))
+;;(global-unset-key (kbd "super x"))
 
 ;; window size
 ;;(pushnew! initial-frame-alist '(width . 180) '(height . 55))
@@ -92,6 +92,7 @@
  word-wrap-by-category t
  all-the-icons-scale-factor 1.0
  )
+(global-subword-mode t) ;; 启用 global-subword-mode 后，Emacs 会在全局范围内使用 subword-mode，这意味着在所有的缓冲区中，你都可以进行子词的导航和编辑。这在处理代码或文本时非常有用，特别是当你需要对单个字符或字符组合进行精确编辑时。
 
 ;;-------------------------------------------------------------------------------------------
 ;;
@@ -100,13 +101,18 @@
 ;;-------------------------------------------------------------------------------------------
 
 ;; 获取网页标题
-(global-subword-mode t)
+
+;; https://emacs-china.org/t/emacs-firefox-org-link/23661/18
+;; https://emacs-china.org/t/org-firefox/15100/4
 (defun chinhant-grab-mac-link ()
   "获得并插入 Chrome 页面的 Markdown 链接."
   (interactive)
-  (insert (grab-mac-link 'firefox 'org)))
+  (insert (grab-mac-link 'safari 'org)))
 
 (global-set-key (kbd "C-c m") 'chinhant-grab-mac-link)
+
+
+
 
 
 
@@ -140,7 +146,29 @@
   ;; for documentation purposes in case you need it.
   ;; (setq evil-collection-mode-list '(calendar dashboard dired ediff info magit ibuffer))
   (add-to-list 'evil-collection-mode-list 'help) ;; evilify help mode
+  (defvar my-intercept-mode-map (make-sparse-keymap)
+    "High precedence keymap.")
+
+  (define-minor-mode my-intercept-mode
+    "Global minor mode for higher precedence evil keybindings."
+    :global t)
+
+  (my-intercept-mode)
+
+  (dolist (state '(normal visual insert))
+    (evil-make-intercept-map
+     ;; NOTE: This requires an evil version from 2018-03-20 or later
+     (evil-get-auxiliary-keymap my-intercept-mode-map state t t)
+     state))
+
+  (evil-define-key 'normal my-intercept-mode-map
+    (kbd "SPC n f") 'org-roam-node-find)
+
+
   (evil-collection-init))
+
+
+
 
 (use-package evil-tutor)
 
@@ -151,7 +179,7 @@
   (define-key evil-motion-state-map (kbd "RET") nil)
   (define-key evil-motion-state-map (kbd "TAB") nil))
 ;; Setting RETURN key in org-mode to follow links
-(setq org-return-follows-link  t)
+;;(setq org-return-follows-link  t)
 
 
 

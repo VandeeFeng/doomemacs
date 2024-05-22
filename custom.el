@@ -12,3 +12,4 @@
  ;; If there is more than one, they won't work right.
  '(aw-leading-char-face ((t (:foreground "white" :background "red" :weight bold :height 1.5 :box (:line-width 10 :color "red"))))))
 
+(put 'customize-group 'disabled nil)

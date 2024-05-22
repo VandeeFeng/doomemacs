@@ -58,6 +58,7 @@
 (package! gptel)
 (package! evil-tutor)
 (package! grab-mac-link)
+(package! org-mac-link :disable t)
 ;;(package! rime)
 ;;(package! sis)
 ;; (package! perspective)

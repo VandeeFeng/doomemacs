@@ -6,7 +6,31 @@
 ;;;
 
 
+;;-------------------------------------------------------------------------------
+;; org
+;;-------------------------------------------------------------------------------
+;; https://www.zmonster.me/2018/02/28/org-mode-capture.html
+(global-set-key (kbd "C-c c") 'org-capture)
+(setq org-default-notes-file "~/Vandee/pkm/inbox.org")
+(setq org-capture-templates nil)
 
+(add-to-list 'org-capture-templates
+             '("w" "Web Collections" entry
+               (file+headline "~/Vandee/pkm/inbox.org" "Web")
+               "* %U %:annotation\n\n%:initial\n\n%?"))
+
+(add-to-list 'org-capture-templates
+             '("j" "Journal" entry (file+datetree  "~/Vandee/pkm/Journals/journal.org")
+               "* [[file:%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
+(add-to-list 'org-capture-templates
+             '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/inbox.org")
+               "* %U - %^{heading} %^g\n %?\n"))
+
+
+
+;;-------------------------------------------------------------------------------
+;; org-roam
+;;-------------------------------------------------------------------------------
 (setq org-roam-dailies-directory "~/Vandee/pkm/Journals/")
 (setq org-export-with-toc nil) ;;禁止生成toc
 (use-package org-roam
