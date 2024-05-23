@@ -47,6 +47,20 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 ;;(setq org-directory "~/Vandee/pkm/")
+(setq org-directory "~/Vandee/pkm/")
+(setq org-default-notes-file "~/Vandee/pkm/inbox.org")
+(setq org-capture-templates nil)
+(add-to-list 'org-capture-templates
+             '("w" "Web Collections" item
+               (file+headline "~/Vandee/pkm/websites.org" "实用")
+               "%?"))
+
+(add-to-list 'org-capture-templates
+             '("j" "Journal" entry (file+datetree  "~/Vandee/pkm/Journals/journal.org")
+               "* [[file:%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
+(add-to-list 'org-capture-templates
+             '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/Inbox.org")
+               "* %U - %^{heading} %^g\n %?\n"))
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
