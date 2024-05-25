@@ -44,10 +44,18 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
+
+;;---------------------------------------------------------------------------------
+;;
+;;org settings
+;;
+;;---------------------------------------------------------------------------------
+
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 ;;(setq org-directory "~/Vandee/pkm/")
 (setq org-directory "~/Vandee/pkm/")
+(global-set-key (kbd "C-c c") 'org-capture)
 (setq org-default-notes-file "~/Vandee/pkm/inbox.org")
 (setq org-capture-templates nil)
 (add-to-list 'org-capture-templates
@@ -61,6 +69,13 @@
 (add-to-list 'org-capture-templates
              '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/Inbox.org")
                "* %U - %^{heading} %^g\n %?\n"))
+
+(defun my-tags-view ()
+  "Show all headlines for org files matching a TAGS criterion."
+  (interactive)
+  (let* ((org-agenda-files '("~/Vandee/pkm"))
+         (org-tags-match-list-sublevels nil))
+    (call-interactively 'org-tags-view)))
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an

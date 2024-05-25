@@ -36,6 +36,7 @@
     "v j" '((lambda () (interactive)
               (find-file "~/Vandee/pkm/Journals/journal.org"))
             :wk "go to Journals")
+    "v s" '(my-tags-view :wk "my-tags-view")
     ;; "v o n" '(org-roam-capture :wk "org-roam-capture")
     ;; "v o d" '(org-roam-dailies-capture-today :wk "org-roam-dailies-capture-today")
 

@@ -93,6 +93,71 @@
  all-the-icons-scale-factor 1.0
  )
 (global-subword-mode t) ;; 启用 global-subword-mode 后，Emacs 会在全局范围内使用 subword-mode，这意味着在所有的缓冲区中，你都可以进行子词的导航和编辑。这在处理代码或文本时非常有用，特别是当你需要对单个字符或字符组合进行精确编辑时。
+;;
+;;
+;; 自定义搜索
+(defun eye--build-or-regexp-by-keywords (keywords)
+  "构建or语法的正则"
+  (let (wordlist tmp regexp)
+    (setq wordlist (split-string keywords " "))
+    (dolist (word wordlist)
+      (setq tmp (format "(%s)" word))
+      (if regexp (setq regexp (concat regexp "|")))
+      (setq regexp (concat regexp tmp)))
+    regexp
+    ))
+
+(defun eye--build-and-regexp-by-keywords (keywords)
+  "构建and语法的正则"
+  (let (reg wlist fullreg reglist)
+    (setq wlist (split-string keywords " "))
+    (dolist (w1 wlist)
+      (setq reg w1)
+      (dolist (w2 wlist)
+	(unless (string-equal w1 w2)
+	  (setq reg (format "%s.*%s" reg w2))))
+      (setq reg (format "(%s)" reg))
+      (add-to-list 'reglist reg)
+      )
+    ;; 还要反过来一次
+    (dolist (w1 wlist)
+      (setq reg w1)
+      (dolist (w2 (reverse wlist))
+	(unless (string-equal w1 w2)
+	  (setq reg (format "%s.*%s" reg w2))))
+      (setq reg (format "(%s)" reg))
+      (add-to-list 'reglist reg)
+      )
+
+    (dolist (r reglist)
+      (if fullreg (setq fullreg (concat fullreg "|")))
+      (setq fullreg (concat fullreg r)))
+
+    fullreg
+    ))
+
+(defun eye/search-or-by-rg ()
+  "以空格分割关键词，以or条件搜索多个关键词的内容
+如果要搜索tag，可以输入`:tag1 :tag2 :tag3'
+"
+  (interactive)
+  (let* ((keywords (read-string "Or Search(rg): "))
+	 (regexp (eye--build-or-regexp-by-keywords keywords)))
+    (message "search regexp:%s" regexp)
+    (color-rg-search-input regexp)
+    ))
+
+
+(defun eye/search-and-by-rg ()
+  "以空格分割关键词，以and条件搜索同时包含多个关键词的内容
+如果要搜索tag，可以输入`:tag1 :tag2 :tag3'
+"
+  (interactive)
+  (let* ((keywords (read-string "And Search(rg): "))
+	 (regexp (eye--build-and-regexp-by-keywords keywords)))
+    (message "search regexp:%s" regexp)
+    (color-rg-search-input regexp)
+    ))
 
 ;;-------------------------------------------------------------------------------------------
 ;;
