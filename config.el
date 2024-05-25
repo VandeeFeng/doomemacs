@@ -54,6 +54,7 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 ;;(setq org-directory "~/Vandee/pkm/")
+(setq org-agenda-files '("~/Vandee/pkm"))
 (setq org-directory "~/Vandee/pkm/")
 (global-set-key (kbd "C-c c") 'org-capture)
 (setq org-default-notes-file "~/Vandee/pkm/inbox.org")
