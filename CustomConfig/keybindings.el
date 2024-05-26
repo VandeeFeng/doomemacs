@@ -30,7 +30,7 @@
     "v" '(:ignore t :wk "Vandee")
     "v c" '(org-capture :wk "org-capture")
     "v t" '(chinhant-grab-mac-link :wk "网页文章标题获取")
-    "v g [[id:1ac7e6eb-1417-4129-afc0-b24fc91996a3][org基本语法]]s" '(gptel-send :wk "gpt发送")
+    "v g s" '(gptel-send :wk "gpt发送")
     "v g n" '(gptel :wk "gpt新buffer")
     "v f" '(org-roam-node-find :wk "org-roam-node-find")
     "v j" '((lambda () (interactive)

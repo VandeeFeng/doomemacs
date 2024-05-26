@@ -18,13 +18,13 @@
   (setq org-roam-v2-ack t)
   :custom
   (org-roam-dailies-capture-templates
-   '(("d" "default" plain "* %<%Y-%m-%d>\n** TODO\n- \n** Inbox\n- %?"
-      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: ${title}\n"))))
+   '(("d" "daily" plain "* %<%Y-%m-%d>\n** TODO\n- \n** Inbox\n- %?"
+      :if-new (file+head "%<%Y>/%<%Y-%m-%d>.org" "#+title: ${title}\n"))))
   (org-roam-directory "~/Vandee/pkm/roam/")
   (org-roam-capture-templates
-   `(("d" "default" plain "%?"
+   `(("n" "note" plain "%?"
       :if-new (file+head "${slug}.org"
-                         "${title}\n#+UID: %<%Y%m%d%H%M%S>\n#+filetags: \n#+type: \n#+date: %<%Y-%m-%d>\n")
+                         "#+title: ${title}\n#+UID: %<%Y%m%d%H%M%S>\n#+filetags: \n#+type: \n#+date: %<%Y-%m-%d>\n")
       :unnarrowed t))
    )
   (org-roam-completion-everywhere t)
@@ -105,7 +105,7 @@
 
   (add-to-list 'org-capture-templates
                '("j" "Journal" entry (file+datetree  "~/Vandee/pkm/Journals/Journal.org")
-                 "* [[file:%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
+                 "* [[file:%<%Y>/%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
   (add-to-list 'org-capture-templates
                '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/Inbox.org")
                  "* %U - %^{heading} %^g\n %?\n"))
