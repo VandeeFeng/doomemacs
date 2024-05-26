@@ -2,32 +2,6 @@
 ;;;
 ;;;
 ;;;
-;;;
-;;;
-
-
-;;-------------------------------------------------------------------------------
-;; org
-;;-------------------------------------------------------------------------------
-;; https://www.zmonster.me/2018/02/28/org-mode-capture.html
-;; 已在config里设置，必须在启动时加载
-;; (global-set-key (kbd "C-c c") 'org-capture)
-;; (setq org-directory "~/Vandee/pkm/")
-;; (setq org-default-notes-file "~/Vandee/pkm/inbox.org")
-;; (setq org-capture-templates nil)
-
-;; (add-to-list 'org-capture-templates
-;;              '("w" "Web Collections" item
-;;                (file+headline "~/Vandee/pkm/websites.org" "实用")
-;;                "%?"))
-
-;; (add-to-list 'org-capture-templates
-;;              '("j" "Journal" entry (file+datetree  "~/Vandee/pkm/Journals/journal.org")
-;;                "* [[file:%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
-;; (add-to-list 'org-capture-templates
-;;              '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/Inbox.org")
-;;                "* %U - %^{heading} %^g\n %?\n"))
-
 
 
 ;;-------------------------------------------------------------------------------
@@ -102,14 +76,56 @@
                                    :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
 
 
+
+;; For users that prefer using a side-window for the org-roam buffer, the following example configuration should provide a good starting point:对于喜欢使用侧窗口作为 org-roam 缓冲区的用户，以下示例配置应该提供一个很好的起点：
+(add-to-list 'display-buffer-alist
+             '("\\*org-roam\\*"
+               (display-buffer-in-side-window)
+               (side . right)
+               (slot . 0)
+               (window-width . 0.33)
+               (window-parameters . ((no-other-window . t)
+                                     (no-delete-other-windows . t)))))
+
+
 ;;-------------------------------------------------------------------------------
 ;;
 ;; org
 ;;
 ;;-------------------------------------------------------------------------------
-;;一部分已经在config.el里设置，因为要在一开始加载目录
+;;https://www.zmonster.me/2018/02/28/org-mode-capture.html
+;;一部分已经在config.el里设置，因为要在一开始加载目录,可以添加 (after! package) 又写回来了
 
+(after! org
+  (setq org-agenda-files '("~/Vandee/pkm"))
+  (setq org-directory "~/Vandee/pkm/")
+  (global-set-key (kbd "C-c c") 'org-capture)
+  (setq org-default-notes-file "~/Vandee/pkm/inbox.org")
+  (setq org-capture-templates nil)
 
+  (add-to-list 'org-capture-templates
+               '("j" "Journal" entry (file+datetree  "~/Vandee/pkm/Journals/Journal.org")
+                 "* [[file:%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
+  (add-to-list 'org-capture-templates
+               '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/Inbox.org")
+                 "* %U - %^{heading} %^g\n %?\n"))
+  (add-to-list 'org-capture-templates '("c" "Collections"))
+  (add-to-list 'org-capture-templates
+               '("cw" "Web Collections" item
+                 (file+headline "~/Vandee/pkm/websites.org" "实用")
+                 "%?"))
+  (add-to-list 'org-capture-templates
+               '("ct" "Tool Collections" item
+                 (file+headline "~/Vandee/pkm/tools.org" "实用")
+                 "%?"))
+
+  (defun my-tags-view ()
+    "Show all headlines for org files matching a TAGS criterion."
+    (interactive)
+    (let* ((org-agenda-files '("~/Vandee/pkm"))
+           (org-tags-match-list-sublevels nil))
+      (call-interactively 'org-tags-view)))
+  )
 
 ;; 需要这个功能的 Org 笔记在 header 里加入下面一行即可（在笔记的前18行都可以）。 #+last_modified: [ ]
 
@@ -132,14 +148,3 @@
           org-roam-ui-update-on-save t
           org-roam-ui-open-on-start t))
   )
-
-
-;; For users that prefer using a side-window for the org-roam buffer, the following example configuration should provide a good starting point:对于喜欢使用侧窗口作为 org-roam 缓冲区的用户，以下示例配置应该提供一个很好的起点：
-(add-to-list 'display-buffer-alist
-             '("\\*org-roam\\*"
-               (display-buffer-in-side-window)
-               (side . right)
-               (slot . 0)
-               (window-width . 0.33)
-               (window-parameters . ((no-other-window . t)
-                                     (no-delete-other-windows . t)))))
