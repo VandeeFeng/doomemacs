@@ -19,7 +19,7 @@
   :custom
   (org-roam-dailies-capture-templates
    '(("d" "daily" plain "* %<%Y-%m-%d>\n** TODO\n- \n** Inbox\n- %?"
-      :if-new (file+head "%<%Y>/%<%Y-%m-%d>.org" "#+title: ${title}\n"))))
+      :if-new (file+head "%<%Y>/%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
   (org-roam-directory "~/Vandee/pkm/roam/")
   (org-roam-capture-templates
    `(("n" "note" plain "%?"
