@@ -17,13 +17,25 @@
 ;;(global-set-key (kbd "M-z") nil)
 
 ;;(global-unset-key (kbd "super x"))
+;; 连续输入空格切换输入法
+;; (defun switch-input-method ()
+;;   "Switch input method using Caps Lock key via AppleScript on macOS."
+;;   (interactive)
+;;   (let ((script "tell application \"System Events\" to key code 57"))
+;;     (shell-command (concat "osascript -e '" script "'"))))
 
+;; ;; 绑定单个空格到 self-insert-command
+;; (define-key evil-normal-state-map " " 'self-insert-command)
+
+;; ;; 绑定连续两个空格到 switch-input-method 函数
+;; (define-key evil-normal-state-map [j k] 'switch-input-method)
 ;; window size
 ;;(pushnew! initial-frame-alist '(width . 180) '(height . 55))
 ;; (add-hook 'window-setup-hook #'toggle-frame-maximized)
 ;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen)
 ;;
 
+;; 窗口大小设定
 (if (not (eq window-system nil))
     (progn
       ;; top, left ... must be integer
@@ -160,7 +172,15 @@
     ))
 
 
+;; 去除多余空格
 
+;; (defun my-remove-extra-spaces ()
+;;   "Remove extra spaces in the current buffer."
+;;   (interactive)
+;;   (replace-regexp "\\(\\s-\\)\\s-" "\\1" nil (point-min) (point-max)))
+
+;; ;; 绑定到一个快捷键，例如 C-c s
+;; (global-set-key (kbd "C-c s") 'my-remove-extra-spaces)
 
 ;;-------------------------------------------------------------------------------------------
 ;;

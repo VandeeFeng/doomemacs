@@ -29,7 +29,7 @@
   (vf/leader-keys
     "v" '(:ignore t :wk "Vandee")
     "v c" '(org-capture :wk "org-capture")
-    "v t" '(chinhant-grab-mac-link :wk "网页文章标题获取")
+    ;;"v t" '(chinhant-grab-mac-link :wk "网页文章标题获取")
     "v g" '(:ignore t :wk "gpt")
     "v g s" '(gptel-send :wk "gpt发送")
     "v g n" '(gptel :wk "gpt新buffer")
@@ -37,7 +37,8 @@
     "v j" '((lambda () (interactive)
               (find-file "~/Vandee/pkm/Journals/journal.org"))
             :wk "go to Journals")
-    "v s" '(my-tags-view :wk "my-tags-view")
+    "v t" '(my-tags-view :wk "my-tags-view")
+    "v r" '(my-remove-extra-spaces :wk "my-remove-extra-spaces")
     ;; "v o n" '(org-roam-capture :wk "org-roam-capture")
     ;; "v o d" '(org-roam-dailies-capture-today :wk "org-roam-dailies-capture-today")
 
