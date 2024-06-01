@@ -198,12 +198,12 @@
 
 ;; https://emacs-china.org/t/emacs-firefox-org-link/23661/18
 ;; https://emacs-china.org/t/org-firefox/15100/4
-(defun chinhant-grab-mac-link ()
-  "获得并插入 Chrome 页面的 Markdown 链接."
-  (interactive)
-  (insert (grab-mac-link 'safari 'org)))
+;; (defun chinhant-grab-mac-link ()
+;;   "获得并插入 Chrome 页面的 Markdown 链接."
+;;   (interactive)
+;;   (insert (grab-mac-link 'safari 'org)))
 
-(global-set-key (kbd "C-c m") 'chinhant-grab-mac-link)
+;; (global-set-key (kbd "C-c m") 'chinhant-grab-mac-link)
 
 
 

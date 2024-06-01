@@ -31,12 +31,12 @@
   :custom
   (org-roam-dailies-capture-templates
    '(("d" "daily" plain "* %<%Y-%m-%d>\n** TODO\n- \n** Inbox\n- %?"
-      :if-new (file+head "%<%Y>/%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
+      :if-new (file+head "%<%Y>/%<%Y-%m-%d>.org" "#+TITLE: %<%Y-%m-%d>\n"))))
   (org-roam-directory "~/Vandee/pkm/roam/")
   (org-roam-capture-templates
    `(("n" "note" plain "%?"
       :if-new (file+head "${slug}.org"
-                         "#+title: ${title}\n#+UID: %<%Y%m%d%H%M%S>\n#+filetags: \n#+type: \n#+date: %<%Y-%m-%d>\n")
+                         "#+TITLE: ${title}\n#+UID: %<%Y%m%d%H%M%S>\n#+FILETAGS: \n#+TYPE: \n#+SOURCE: \n#+DATE: %<%Y-%m-%d>\n")
       :unnarrowed t))
    )
   (org-roam-completion-everywhere t)
@@ -85,7 +85,7 @@
   (interactive)
   (org-roam-capture- :node (org-roam-node-create)
                      :templates '(("i" "inbox" plain "* %?"
-                                   :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
+                                   :if-new (file+head "Inbox.org" "#+TITLE: Inbox\n")))))
 
 
 
@@ -108,36 +108,36 @@
 ;;https://www.zmonster.me/2018/02/28/org-mode-capture.html
 ;;一部分已经在config.el里设置，因为要在一开始加载目录,可以添加 (after! package) 又写回来了
 
-(after! org
-  (setq org-agenda-files '("~/Vandee/pkm"))
-  (setq org-directory "~/Vandee/pkm/")
-  (global-set-key (kbd "C-c c") 'org-capture)
-  (setq org-default-notes-file "~/Vandee/pkm/inbox.org")
-  (setq org-capture-templates nil)
+;; (after! org
+;;   (setq org-agenda-files '("~/Vandee/pkm"))
+;;   (setq org-directory "~/Vandee/pkm/")
+;;   (global-set-key (kbd "C-c c") 'org-capture)
+;;   (setq org-default-notes-file "~/Vandee/pkm/inbox.org")
+;;   (setq org-capture-templates nil)
 
-  (add-to-list 'org-capture-templates
-               '("j" "Journal" entry (file+datetree  "~/Vandee/pkm/Journals/Journal.org")
-                 "* [[file:%<%Y>/%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
-  (add-to-list 'org-capture-templates
-               '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/Inbox.org")
-                 "* %U - %^{heading} %^g\n %?\n"))
-  (add-to-list 'org-capture-templates '("c" "Collections"))
-  (add-to-list 'org-capture-templates
-               '("cw" "Web Collections" item
-                 (file+headline "~/Vandee/pkm/websites.org" "实用")
-                 "%?"))
-  (add-to-list 'org-capture-templates
-               '("ct" "Tool Collections" item
-                 (file+headline "~/Vandee/pkm/tools.org" "实用")
-                 "%?"))
+;;   (add-to-list 'org-capture-templates
+;;                '("j" "Journal" entry (file+datetree  "~/Vandee/pkm/Journals/Journal.org")
+;;                  "* [[file:%<%Y>/%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
+;;   (add-to-list 'org-capture-templates
+;;                '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/Inbox.org")
+;;                  "* %U - %^{heading} %^g\n %?\n"))
+;;   (add-to-list 'org-capture-templates '("c" "Collections"))
+;;   (add-to-list 'org-capture-templates
+;;                '("cw" "Web Collections" item
+;;                  (file+headline "~/Vandee/pkm/websites.org" "实用")
+;;                  "%?"))
+;;   (add-to-list 'org-capture-templates
+;;                '("ct" "Tool Collections" item
+;;                  (file+headline "~/Vandee/pkm/tools.org" "实用")
+;;                  "%?"))
 
-  (defun my-tags-view ()
-    "Show all headlines for org files matching a TAGS criterion."
-    (interactive)
-    (let* ((org-agenda-files '("~/Vandee/pkm"))
-           (org-tags-match-list-sublevels nil))
-      (call-interactively 'org-tags-view)))
-  )
+;;   (defun my-tags-view ()
+;;     "Show all headlines for org files matching a TAGS criterion."
+;;     (interactive)
+;;     (let* ((org-agenda-files '("~/Vandee/pkm"))
+;;            (org-tags-match-list-sublevels nil))
+;;       (call-interactively 'org-tags-view)))
+;;   )
 
 ;; 需要这个功能的 Org 笔记在 header 里加入下面一行即可（在笔记的前18行都可以）。 #+last_modified: [ ]
 
@@ -160,3 +160,22 @@
           org-roam-ui-update-on-save t
           org-roam-ui-open-on-start t))
   )
+
+;; 显示当前 heading 内容并折叠其他
+;; https://emacs-china.org/t/org-mode/23205
+(defun my/org-show-current-heading-tidily ()
+  (interactive)
+  "Show next entry, keeping other entries closed."
+  (if (save-excursion (end-of-line) (outline-invisible-p))
+      (progn (org-show-entry) (show-children))
+    (save-excursion
+      (outline-back-to-heading)
+      (unless (and (bolp) (org-on-heading-p))
+	(org-up-heading-safe)
+	(hide-subtree)
+	(error "Boundary reached"))
+      (org-overview)
+      (org-reveal t)
+      (org-show-entry)
+      (show-children))
+    ))

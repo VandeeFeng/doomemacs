@@ -53,6 +53,35 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
+(setq org-agenda-files '("~/Vandee/pkm"))
+(setq org-directory "~/Vandee/pkm/")
+(global-set-key (kbd "C-c c") 'org-capture)
+(setq org-default-notes-file "~/Vandee/pkm/inbox.org")
+(setq org-capture-templates nil)
+
+(add-to-list 'org-capture-templates
+             '("j" "Journal" entry (file+datetree  "~/Vandee/pkm/Journals/Journal.org")
+               "* [[file:%<%Y>/%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
+(add-to-list 'org-capture-templates
+             '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/Inbox.org")
+               "* %U - %^{heading} %^g\n %?\n"))
+(add-to-list 'org-capture-templates '("c" "Collections"))
+(add-to-list 'org-capture-templates
+             '("cw" "Web Collections" item
+               (file+headline "~/Vandee/pkm/websites.org" "实用")
+               "%?"))
+(add-to-list 'org-capture-templates
+             '("ct" "Tool Collections" item
+               (file+headline "~/Vandee/pkm/tools.org" "实用")
+               "%?"))
+
+(defun my-tags-view ()
+  "Show all headlines for org files matching a TAGS criterion."
+  (interactive)
+  (let* ((org-agenda-files '("~/Vandee/pkm"))
+         (org-tags-match-list-sublevels nil))
+    (call-interactively 'org-tags-view)))
+
 
 
 
