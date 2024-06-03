@@ -35,7 +35,7 @@
   (org-roam-directory "~/Vandee/pkm/roam/")
   (org-roam-capture-templates
    `(("n" "note" plain "%?"
-      :if-new (file+head "${slug}.org"
+      :if-new (file+head "${title}.org"
                          "#+TITLE: ${title}\n#+UID: %<%Y%m%d%H%M%S>\n#+FILETAGS: \n#+TYPE: \n#+SOURCE: \n#+DATE: %<%Y-%m-%d>\n")
       :unnarrowed t))
    )
@@ -138,9 +138,10 @@
 ;;            (org-tags-match-list-sublevels nil))
 ;;       (call-interactively 'org-tags-view)))
 ;;   )
+;; (setq org-hide-emphasis-markers t)
+;;
 
 ;; 需要这个功能的 Org 笔记在 header 里加入下面一行即可（在笔记的前18行都可以）。 #+last_modified: [ ]
-
 (after! org
   (add-hook 'org-mode-hook
             (lambda ()
@@ -179,3 +180,81 @@
       (org-show-entry)
       (show-children))
     ))
+
+;; Zotreo
+;; https://hsingko.pages.dev/post/2022/07/04/zotero-and-orgmode/
+;; https://orgmode-exocortex.com/2020/05/13/linking-to-zotero-items-and-collections-from-org-mode/
+
+(org-link-set-parameters "zotero" :follow
+                         (lambda (zpath)
+                           (browse-url
+                            ;; we get the "zotero:"-less url, so we put it back.
+                            (format "zotero:%s" zpath))))
+
+
+
+;;-------------------------------------------------------------------------------
+;;
+;; org 美化
+;;
+;;-------------------------------------------------------------------------------
+;; 设置标题大小
+(after! org
+  (custom-set-faces!
+    '(outline-1 :weight extra-bold :height 1.25)
+    '(outline-2 :weight bold :height 1.15)
+    '(outline-3 :weight bold :height 1.12)
+    '(outline-4 :weight semi-bold :height 1.09)
+    '(outline-5 :weight semi-bold :height 1.06)
+    '(outline-6 :weight semi-bold :height 1.03)
+    '(outline-8 :weight semi-bold)
+    '(outline-9 :weight semi-bold))
+
+  (custom-set-faces!
+    '(org-document-title :height 1.2)))
+
+;; 设置行内make up
+(setq org-hide-emphasis-markers t)
+
+;; 盘古
+;;https://github.com/coldnew/pangu-spacing
+(use-package pangu-spacing)
+(add-hook 'org-mode-hook
+          '(lambda ()
+             (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)))
+
+
+;; https://emacs-china.org/t/org-mode/22313
+;; 中文标记优化，不用零宽空格在 org-mode 中标记中文的办法
+;; (font-lock-add-keywords 'org-mode
+;;                         '(("\\cc\\( \\)[/+*_=~][^a-zA-Z0-9/+*_=~\n]+?[/+*_=~]\\( \\)?\\cc?"
+;;                            (1 (prog1 () (compose-region (match-beginning 1) (match-end 1) ""))))
+;;                           ("\\cc?\\( \\)?[/+*_=~][^a-zA-Z0-9/+*_=~\n]+?[/+*_=~]\\( \\)\\cc"
+;;                            (2 (prog1 () (compose-region (match-beginning 2) (match-end 2) "")))))
+;;                         'append)
+
+;; (with-eval-after-load 'ox
+;;   (defun eli-strip-ws-maybe (text _backend _info)
+;;     (let* ((text (replace-regexp-in-string
+;;                   "\\(\\cc\\) *\n *\\(\\cc\\)"
+;;                   "\\1\\2" text));; remove whitespace from line break
+;;            ;; remove whitespace from `org-emphasis-alist'
+;;            (text (replace-regexp-in-string "\\(\\cc\\) \\(.*?\\) \\(\\cc\\)"
+;;                                            "\\1\\2\\3" text))
+;;            ;; restore whitespace between English words and Chinese words
+;;            (text (replace-regexp-in-string "\\(\\cc\\)\\(\\(?:<[^>]+>\\)?[a-z0-9A-Z-]+\\(?:<[^>]+>\\)?\\)\\(\\cc\\)"
+;;                                            "\\1 \\2 \\3" text)))
+;;       text))
+;;   (add-to-list 'org-export-filter-paragraph-functions #'eli-strip-ws-maybe))
+;;
+
+
+
+;;https://emacs-china.org/t/orgmode/9740/11
+;; 让中文也可以不加空格就使用行内格式
+
+;; (setq org-emphasis-regexp-components '("-[:multibyte:][:space:]('\"{" "-[:multibyte:][:space:].,:!?;'\")}\\[" "[:space:]" "." 1))
+;; (org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
+;; (org-element-update-syntax)
+;;
+;;

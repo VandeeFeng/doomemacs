@@ -34,6 +34,25 @@
 ;; (add-hook 'window-setup-hook #'toggle-frame-maximized)
 ;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen)
 ;;
+;;
+;;字体
+(setq doom-font (font-spec :family "霞鹜文楷等宽" :weight 'regular :size 14))
+
+;; ;; Plan A: 中文苹方, 英文Roboto Mono
+;; (setq doom-font (font-spec :family "Roboto Mono" :size 22)
+;;       doom-serif-font doom-font
+;;       doom-symbol-font (font-spec :family "LXGWWenKaiMono")
+;;       doom-variable-pitch-font (font-spec :family "LXGWWenKaiMono" :weight 'regular))
+
+;; ;; 如果不把这玩意设置为 nil, 会默认去用 fontset-default 来展示, 配置无效
+;; (setq use-default-font-for-symbols nil)
+
+;; ;; Doom 的字体加载顺序问题, 如果不设定这个 hook, 配置会被覆盖失效
+;; (add-hook! 'after-setting-font-hook
+;;   (set-fontset-font t 'latin (font-spec :family "Roboto Mono"))
+;;   (set-fontset-font t 'symbol (font-spec :family "Symbola"))
+;;   (set-fontset-font t 'mathematical (font-spec :family "Symbola"))
+;;   (set-fontset-font t 'emoji (font-spec :family "Symbola")))
 
 ;; 窗口大小设定
 (if (not (eq window-system nil))
