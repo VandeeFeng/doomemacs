@@ -108,38 +108,40 @@
 ;;https://www.zmonster.me/2018/02/28/org-mode-capture.html
 ;;一部分已经在config.el里设置，因为要在一开始加载目录,可以添加 (after! package) 又写回来了
 
-;; (after! org
-;;   (setq org-agenda-files '("~/Vandee/pkm"))
-;;   (setq org-directory "~/Vandee/pkm/")
-;;   (global-set-key (kbd "C-c c") 'org-capture)
-;;   (setq org-default-notes-file "~/Vandee/pkm/inbox.org")
-;;   (setq org-capture-templates nil)
+(after! org
+  (setq org-agenda-files '("~/Vandee/pkm"))
+  (setq org-directory "~/Vandee/pkm/")
+  (global-set-key (kbd "C-c c") 'org-capture)
+  (setq org-default-notes-file "~/Vandee/pkm/inbox.org")
+  (setq org-capture-templates nil)
 
-;;   (add-to-list 'org-capture-templates
-;;                '("j" "Journal" entry (file+datetree  "~/Vandee/pkm/Journals/Journal.org")
-;;                  "* [[file:%<%Y>/%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
-;;   (add-to-list 'org-capture-templates
-;;                '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/Inbox.org")
-;;                  "* %U - %^{heading} %^g\n %?\n"))
-;;   (add-to-list 'org-capture-templates '("c" "Collections"))
-;;   (add-to-list 'org-capture-templates
-;;                '("cw" "Web Collections" item
-;;                  (file+headline "~/Vandee/pkm/websites.org" "实用")
-;;                  "%?"))
-;;   (add-to-list 'org-capture-templates
-;;                '("ct" "Tool Collections" item
-;;                  (file+headline "~/Vandee/pkm/tools.org" "实用")
-;;                  "%?"))
+  (add-to-list 'org-capture-templates
+               '("j" "Journal" entry (file+datetree  "~/Vandee/pkm/Journals/Journal.org")
+                 "* [[file:%<%Y>/%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
+  (add-to-list 'org-capture-templates
+               '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/Inbox.org")
+                 "* %U - %^{heading} %^g\n %?\n"))
+  (add-to-list 'org-capture-templates '("c" "Collections"))
+  (add-to-list 'org-capture-templates
+               '("cw" "Web Collections" item
+                 (file+headline "~/Vandee/pkm/websites.org" "实用")
+                 "%?"))
+  (add-to-list 'org-capture-templates
+               '("ct" "Tool Collections" item
+                 (file+headline "~/Vandee/pkm/tools.org" "实用")
+                 "%?"))
 
-;;   (defun my-tags-view ()
-;;     "Show all headlines for org files matching a TAGS criterion."
-;;     (interactive)
-;;     (let* ((org-agenda-files '("~/Vandee/pkm"))
-;;            (org-tags-match-list-sublevels nil))
-;;       (call-interactively 'org-tags-view)))
-;;   )
-;; (setq org-hide-emphasis-markers t)
-;;
+  (defun my-tags-view ()
+    "Show all headlines for org files matching a TAGS criterion."
+    (interactive)
+    (let* ((org-agenda-files '("~/Vandee/pkm"))
+           (org-tags-match-list-sublevels nil))
+      (call-interactively 'org-tags-view)))
+
+  )
+;;https://emacs-china.org/t/org-mode-gtd-faq/196/16
+;;很多时候我自己的tag都是唯一的，为了能够在不同的文件中使用同一个tag，或者说是自动选择和查看已经有的tag，我是这样设置的：
+(setq-default org-complete-tags-always-offer-all-agenda-tags t)
 
 ;; 需要这个功能的 Org 笔记在 header 里加入下面一行即可（在笔记的前18行都可以）。 #+last_modified: [ ]
 (after! org
@@ -211,10 +213,11 @@
     '(outline-9 :weight semi-bold))
 
   (custom-set-faces!
-    '(org-document-title :height 1.2)))
+    '(org-document-title :height 1.2))
+  (setq org-hide-emphasis-markers t) ;; 设置行内make up，直接显示*粗体*，/斜体/，=高亮=，~代码~
+  )
 
-;; 设置行内make up
-(setq org-hide-emphasis-markers t)
+
 
 ;; 盘古
 ;;https://github.com/coldnew/pangu-spacing

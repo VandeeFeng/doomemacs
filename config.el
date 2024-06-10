@@ -53,36 +53,40 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-agenda-files '("~/Vandee/pkm"))
-(setq org-directory "~/Vandee/pkm/")
-(global-set-key (kbd "C-c c") 'org-capture)
-(setq org-default-notes-file "~/Vandee/pkm/inbox.org")
-(setq org-capture-templates nil)
 
-(add-to-list 'org-capture-templates
-             '("j" "Journal" entry (file+datetree  "~/Vandee/pkm/Journals/Journal.org")
-               "* [[file:%<%Y>/%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
-(add-to-list 'org-capture-templates
-             '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/Inbox.org")
-               "* %U - %^{heading} %^g\n %?\n"))
-(add-to-list 'org-capture-templates '("c" "Collections"))
-(add-to-list 'org-capture-templates
-             '("cw" "Web Collections" item
-               (file+headline "~/Vandee/pkm/websites.org" "实用")
-               "%?"))
-(add-to-list 'org-capture-templates
-             '("ct" "Tool Collections" item
-               (file+headline "~/Vandee/pkm/tools.org" "实用")
-               "%?"))
+;; (after! org
+;; (setq org-agenda-files '("~/Vandee/pkm/")) ;;这样不包括子文件夹
+;; ;;这样会把目录下包括子文件夹的文件都添加进去https://emacs-china.org/t/org-txt-agenda/13506/5
+;; ;;(setq org-agenda-files (directory-files-recursively "~/Vandee/pkm/" "\\.org$"))
+;; (setq org-directory "~/Vandee/pkm/")
+;; (global-set-key (kbd "C-c c") 'org-capture)
+;; (setq org-default-notes-file "~/Vandee/pkm/inbox.org")
+;; (setq org-capture-templates nil)
+;; ;; 这里日志里链接单个日志文件路径选择相对路径，方便后面移动文件夹
+;; (add-to-list 'org-capture-templates
+;;              '("j" "Journal" entry (file+datetree  "~/Vandee/pkm/Journals/Journal.org")
+;;                "* [[file:%<%Y>/%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
+;; (add-to-list 'org-capture-templates
+;;              '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/Inbox.org")
+;;                "* %U - %^{heading} %^g\n %?\n"))
+;; (add-to-list 'org-capture-templates '("c" "Collections"))
+;; (add-to-list 'org-capture-templates
+;;              '("cw" "Web Collections" item
+;;                (file+headline "~/Vandee/pkm/websites.org" "实用")
+;;                "%?"))
+;; (add-to-list 'org-capture-templates
+;;              '("ct" "Tool Collections" item
+;;                (file+headline "~/Vandee/pkm/tools.org" "实用")
+;;                "%?"))
 
-(defun my-tags-view ()
-  "Show all headlines for org files matching a TAGS criterion."
-  (interactive)
-  (let* ((org-agenda-files '("~/Vandee/pkm"))
-         (org-tags-match-list-sublevels nil))
-    (call-interactively 'org-tags-view)))
+;; (defun my-tags-view ()
+;;   "Show all headlines for org files matching a TAGS criterion."
+;;   (interactive)
+;;   (let* ((org-agenda-files '("~/Vandee/pkm/"))
+;;          (org-tags-match-list-sublevels nil))
+;;     (call-interactively 'org-tags-view)))
 
-
+;; )
 
 
 
