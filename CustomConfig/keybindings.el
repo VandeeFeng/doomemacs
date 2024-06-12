@@ -29,6 +29,8 @@
   (vf/leader-keys
     "v" '(:ignore t :wk "Vandee")
     "v c" '(org-capture :wk "org-capture")
+    "v r" '(org-roam-capture :wk "org-roam-capture")
+
     ;;"v t" '(chinhant-grab-mac-link :wk "网页文章标题获取")
     "v g" '(:ignore t :wk "gpt")
     "v g s" '(gptel-send :wk "gpt发送")

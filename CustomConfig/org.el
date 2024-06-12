@@ -25,7 +25,7 @@
 (setq org-export-with-toc nil) ;;禁止生成toc
 (use-package org-roam
   :ensure t
-  :demand t  ;; Ensure org-roam is loaded by default
+  ;;:demand t  ;; Ensure org-roam is loaded by default 如果没有这个后面的zotero链接函数会不起作用，还在解决.这样会导致Emacs在第一次开机启动的时候很慢
   :init
   (setq org-roam-v2-ack t)
   :custom
@@ -33,6 +33,7 @@
    '(("d" "daily" plain "* %<%Y-%m-%d>\n** TODO\n- \n** Inbox\n- %?"
       :if-new (file+head "%<%Y>/%<%Y-%m-%d>.org" "#+TITLE: %<%Y-%m-%d>\n"))))
   (org-roam-directory "~/Vandee/pkm/roam/")
+  (org-id-locations-file "~/Vandee/pkm/roam/.orgids")
   (org-roam-capture-templates
    `(("n" "note" plain "%?"
       :if-new (file+head "${title}.org"
@@ -60,6 +61,7 @@
   (require 'org-roam-dailies) ;; Ensure the keymap is available
   (org-roam-db-autosync-mode)
   (require 'org-roam-protocol))
+
 
 
 
@@ -109,10 +111,15 @@
 ;;一部分已经在config.el里设置，因为要在一开始加载目录,可以添加 (after! package) 又写回来了
 
 (after! org
+  (org-link-set-parameters "zotero" :follow
+                           (lambda (zpath)
+                             (browse-url
+                              ;; we get the "zotero:"-less url, so we put it back.
+                              (format "zotero:%s" zpath))))
   (setq org-agenda-files '("~/Vandee/pkm"))
   (setq org-directory "~/Vandee/pkm/")
   (global-set-key (kbd "C-c c") 'org-capture)
-  (setq org-default-notes-file "~/Vandee/pkm/inbox.org")
+  ;;(setq org-default-notes-file "~/Vandee/pkm/inbox.org")
   (setq org-capture-templates nil)
 
   (add-to-list 'org-capture-templates
@@ -161,7 +168,7 @@
     (setq org-roam-ui-sync-theme t
           org-roam-ui-follow t
           org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t))
+          org-roam-ui-open-on-start nil))
   )
 
 ;; 显示当前 heading 内容并折叠其他
@@ -186,12 +193,13 @@
 ;; Zotreo
 ;; https://hsingko.pages.dev/post/2022/07/04/zotero-and-orgmode/
 ;; https://orgmode-exocortex.com/2020/05/13/linking-to-zotero-items-and-collections-from-org-mode/
+;; 现在写在org加载之后
 
-(org-link-set-parameters "zotero" :follow
-                         (lambda (zpath)
-                           (browse-url
-                            ;; we get the "zotero:"-less url, so we put it back.
-                            (format "zotero:%s" zpath))))
+;; (org-link-set-parameters "zotero" :follow
+;;                          (lambda (zpath)
+;;                            (browse-url
+;;                             ;; we get the "zotero:"-less url, so we put it back.
+;;                             (format "zotero:%s" zpath))))
 
 
 
