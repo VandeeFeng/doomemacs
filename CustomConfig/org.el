@@ -29,9 +29,9 @@
   :init
   (setq org-roam-v2-ack t)
   :custom
-  (org-roam-dailies-capture-templates
-   '(("d" "daily" plain "* %<%Y-%m-%d>\n** TODO\n- \n** Inbox\n- %?"
-      :if-new (file+head "%<%Y>/%<%Y-%m-%d>.org" "#+TITLE: %<%Y-%m-%d>\n"))))
+  ;; (org-roam-dailies-capture-templates
+  ;;  '(("d" "daily" plain "* %<%Y-%m-%d>\n** TODO\n- \n** Inbox\n- %?"
+  ;;     :if-new (file+head "%<%Y>/%<%Y-%m-%d>.org" "#+TITLE: %<%Y-%m-%d>\n"))))
   (org-roam-directory "~/Vandee/pkm/roam/")
   (org-id-locations-file "~/Vandee/pkm/roam/.orgids")
   (org-roam-capture-templates
@@ -60,10 +60,20 @@
   :config
   (require 'org-roam-dailies) ;; Ensure the keymap is available
   (org-roam-db-autosync-mode)
-  (require 'org-roam-protocol))
+  (require 'org-roam-protocol)
+  )
 
 
-
+;; (after! org-roam
+;;   ;; org-roam网页摘录
+;;   ;; https://www.zmonster.me/2020/06/27/org-roam-introduction.html#orgec47e48
+;;   (add-to-list 'org-roam-capture-ref-templates
+;;                '("a" "Annotation" plain (function org-roam-capture--get-point)
+;;                  "%U ${body}\n"
+;;                  :file-name "${slug}"
+;;                  :head "#+title: ${title}\n#+roam_key: ${ref}\n#+roam_alias:\n"
+;;                  :immediate-finish t
+;;                  :unnarrowed t)))
 
 (defun org-roam-node-insert-immediate (arg &rest args)
   (interactive "P")
@@ -72,22 +82,22 @@
                                                   '(:immediate-finish t)))))
     (apply #'org-roam-node-insert args)))
 
-(defun my/org-roam-filter-by-tag (tag-name)
-  (lambda (node)
-    (member tag-name (org-roam-node-tags node))))
+;; (defun my/org-roam-filter-by-tag (tag-name)
+;;   (lambda (node)
+;;     (member tag-name (org-roam-node-tags node))))
 
-(defun my/org-roam-list-notes-by-tag (tag-name)
-  (mapcar #'org-roam-node-file
-          (seq-filter
-           (my/org-roam-filter-by-tag tag-name)
-           (org-roam-node-list))))
+;; (defun my/org-roam-list-notes-by-tag (tag-name)
+;;   (mapcar #'org-roam-node-file
+;;           (seq-filter
+;;            (my/org-roam-filter-by-tag tag-name)
+;;            (org-roam-node-list))))
 
 
-(defun my/org-roam-capture-inbox ()
-  (interactive)
-  (org-roam-capture- :node (org-roam-node-create)
-                     :templates '(("i" "inbox" plain "* %?"
-                                   :if-new (file+head "Inbox.org" "#+TITLE: Inbox\n")))))
+;; (defun my/org-roam-capture-inbox ()
+;;   (interactive)
+;;   (org-roam-capture- :node (org-roam-node-create)
+;;                      :templates '(("i" "inbox" plain "* %?"
+;;                                    :if-new (file+head "Inbox.org" "#+TITLE: Inbox\n")))))
 
 
 
@@ -102,41 +112,84 @@
                                      (no-delete-other-windows . t)))))
 
 
+;;---------------------------------------------
+;;org-agenda-time-grid
+;;--------------------------------------------
+(setq org-agenda-time-grid (quote ((daily today require-timed)
+                                   (300
+                                    600
+                                    900
+                                    1200
+                                    1500
+                                    1800
+                                    2100
+                                    2400)
+                                   "......"
+                                   "-----------------------------------------------------"
+                                   )))
 ;;-------------------------------------------------------------------------------
 ;;
 ;; org
 ;;
 ;;-------------------------------------------------------------------------------
 ;;https://www.zmonster.me/2018/02/28/org-mode-capture.html
+;;https://emacs-china.org/t/05-org-as/12092/6
 ;;一部分已经在config.el里设置，因为要在一开始加载目录,可以添加 (after! package) 又写回来了
+;; ;;这样会把目录下包括子文件夹的文件都添加进去https://emacs-china.org/t/org-txt-agenda/13506/5
+;; ;;(setq org-agenda-files (directory-files-recursively "~/Vandee/pkm/" "\\.org$"))
 
 (after! org
+  ;; (server-start)
+  ;; (require 'org-protocol)
   (org-link-set-parameters "zotero" :follow
                            (lambda (zpath)
                              (browse-url
                               ;; we get the "zotero:"-less url, so we put it back.
                               (format "zotero:%s" zpath))))
-  (setq org-agenda-files '("~/Vandee/pkm"))
-  (setq org-directory "~/Vandee/pkm/")
+  (setq org-agenda-files '("~/Vandee/pkm/org/Journal.org" "~/Vandee/pkm/org/clip.org"))
+  ;; (setq org-agenda-include-diary t)
+  ;; (setq org-agenda-diary-file "~/Vandee/pkm/org/Journal.org")
+  (setq org-directory "~/Vandee/pkm/org/")
   (global-set-key (kbd "C-c c") 'org-capture)
   ;;(setq org-default-notes-file "~/Vandee/pkm/inbox.org")
   (setq org-capture-templates nil)
 
+  ;; (add-to-list 'org-capture-templates
+  ;;              '("j" "Journal" entry (file+datetree  "~/Vandee/pkm/Journals/Journal.org")
+  ;;                "* [[file:%<%Y>/%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
   (add-to-list 'org-capture-templates
-               '("j" "Journal" entry (file+datetree  "~/Vandee/pkm/Journals/Journal.org")
-                 "* [[file:%<%Y>/%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
+               '("j" "Journal" entry (file+datetree "~/Vandee/pkm/org/Journal.org")
+                 "* TODOs\n* Inbox\n- %?"))
   (add-to-list 'org-capture-templates
-               '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/Inbox.org")
+               '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/org/Inbox.org")
                  "* %U - %^{heading} %^g\n %?\n"))
+
+  (defun my-org-goto-last-todo-headline ()
+    "Move point to the last headline in file matching \"* Notes\"."
+    (end-of-buffer)
+    (re-search-backward "\\* TODOs"))
+  (add-to-list 'org-capture-templates
+               '("t" "Task" entry (file+function "~/Vandee/pkm/org/Journal.org"
+                                                 my-org-goto-last-todo-headline)
+                 "* TODO %i%? \n%T"))
+  ;; (add-to-list 'org-capture-templates
+  ;;              '("t" "Task" entry (file+datetree "~/Vandee/pkm/Task.org")
+  ;;                "* TODO %^{任务名}\n%T\n%a\n"))
+
   (add-to-list 'org-capture-templates '("c" "Collections"))
   (add-to-list 'org-capture-templates
                '("cw" "Web Collections" item
-                 (file+headline "~/Vandee/pkm/websites.org" "实用")
+                 (file+headline "~/Vandee/pkm/org/websites.org" "实用")
                  "%?"))
   (add-to-list 'org-capture-templates
                '("ct" "Tool Collections" item
-                 (file+headline "~/Vandee/pkm/tools.org" "实用")
+                 (file+headline "~/Vandee/pkm/org/tools.org" "实用")
                  "%?"))
+  (add-to-list 'org-capture-templates
+               '("cc" "Clip Collections" entry
+                 (file+headline "~/Vandee/pkm/org/clip.org" "Clip")
+                 "* %^{heading} %^g\n %?\n%T"))
+
 
   (defun my-tags-view ()
     "Show all headlines for org files matching a TAGS criterion."
@@ -226,7 +279,15 @@
   )
 
 
+;;-------------------------------------------------------------------------------
+;;
+;; org-protocol
+;;
+;;-------------------------------------------------------------------------------
 
+;;(server-start)
+;;(require 'org-protocol)
+;; (setq org-protocol-protocol 'org-roam)
 ;; 盘古
 ;;https://github.com/coldnew/pangu-spacing
 (use-package pangu-spacing)

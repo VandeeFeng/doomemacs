@@ -7,6 +7,12 @@
 ;;
 ;;
 
+
+(defun my-insert-timestamp ()
+  "Insert a custom formatted timestamp."
+  (interactive)
+  (insert (format-time-string "<%Y-%m-%d %a %H:%M>")))
+
 (use-package general
   :init
   :config
@@ -37,9 +43,10 @@
     "v g n" '(gptel :wk "gpt新buffer")
     "v f" '(org-roam-node-find :wk "org-roam-node-find")
     "v j" '((lambda () (interactive)
-              (find-file "~/Vandee/pkm/Journals/journal.org"))
+              (find-file "~/Vandee/pkm/org/journal.org"))
             :wk "go to Journals")
-    "v t" '(my-tags-view :wk "my-tags-view")
+    "v T" '(my-tags-view :wk "my-tags-view")
+    "v t" '(my-insert-timestamp :wk "insert-timestamp")
     ;;"v r" '(my-remove-extra-spaces :wk "my-remove-extra-spaces")
     "v h" '(my/org-show-current-heading-tidily :wk "折叠其他标题")
     ;; "v o n" '(org-roam-capture :wk "org-roam-capture")
