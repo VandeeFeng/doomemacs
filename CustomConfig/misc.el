@@ -207,6 +207,33 @@
 ;;
 ;;-------------------------------------------------------------------------------------------
 
+(defun my-markdown-to-org ()
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "^# \\(.*\\)" nil t)
+      (replace-match "* \\1"))
+    (goto-char (point-min))
+    (while (re-search-forward "^## \\(.*\\)" nil t)
+      (replace-match "** \\1"))
+    (goto-char (point-min))
+    (while (re-search-forward "^### \\(.*\\)" nil t)
+      (replace-match "*** \\1"))
+    (goto-char (point-min))
+    (while (re-search-forward "^#### \\(.*\\)" nil t)
+      (replace-match "**** \\1"))
+    (goto-char (point-min))
+    (while (re-search-forward "^##### \\(.*\\)" nil t)
+      (replace-match "***** \\1"))
+    (goto-char (point-min))
+    (while (re-search-forward "^###### \\(.*\\)" nil t)
+      (replace-match "****** \\1"))
+    (goto-char (point-min))
+    (while (re-search-forward "\\[\\(.*?\\)\\](\\(.*?\\))" nil t)
+      (replace-match "[[\\2][\\1]]"))))
+
+
+
 ;;-------------------------------------------------------------------------------------------
 ;;
 ;; packages

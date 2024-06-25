@@ -188,7 +188,7 @@
   (add-to-list 'org-capture-templates
                '("cc" "Clip Collections" entry
                  (file+headline "~/Vandee/pkm/org/clip.org" "Clip")
-                 "* %^{heading} %^g\n %?\n%T"))
+                 "* %^{heading} %^g\n%T\nSource: %^{source}\n%?"))
 
 
   (defun my-tags-view ()
