@@ -189,6 +189,11 @@
                '("cc" "Clip Collections" entry
                  (file+headline "~/Vandee/pkm/org/clip.org" "Clip")
                  "* %^{heading} %^g\n%T\nSource: %^{source}\n%?"))
+  ;; (add-to-list 'org-capture-templates
+  ;;              '("m" "Memo" entry
+  ;;                (file+headline "~/Vandee/pkm/org/memo.org" "Memo")
+  ;;                "* %^{heading} %^g\n%T\nSource: %^{source}\n%?"))
+
 
 
   (defun my-tags-view ()

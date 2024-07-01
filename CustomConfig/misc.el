@@ -2,13 +2,48 @@
 
 
 
+
 ;;-------------------------------------------------------------------------------------------
 ;;
 ;; globl settings
 ;;
 ;;-------------------------------------------------------------------------------------------
+;; 显示图片
+;; https://emacs.stackexchange.com/questions/3302/live-refresh-of-inline-images-with-org-display-inline-images
+;;
+;; (auto-image-file-mode t)
+;; (add-hook 'org-mode-hook (lambda () (org-display-inline-images t)))
+
+;; ;; -- Display images in org mode
+;; ;; enable image mode first
+;; (iimage-mode)
+;; ;; add the org file link format to the iimage mode regex
+;; (add-to-list 'iimage-mode-image-regex-alist
+;;              (cons (concat "\\[\\[file:\\(~?" iimage-mode-image-filename-regex "\\)\\]")  1))
+;; ;;  add a hook so we can display images on load
+;; (add-hook 'org-mode-hook '(lambda () (org-turn-on-iimage-in-org)))
+;; ;; function to setup images for display on load
+;; (defun org-turn-on-iimage-in-org ()
+;;   "display images in your org file"
+;;   (interactive)
+;;   (turn-on-iimage-mode)
+;;   (set-face-underline-p 'org-link nil))
+;; ;; function to toggle images in a org bugger
+;; (defun org-toggle-iimage-in-org ()
+;;   "display images in your org file"
+;;   (interactive)
+;;   (if (face-underline-p 'org-link)
+;;       (set-face-underline-p 'org-link nil)
+;;     (set-face-underline-p 'org-link t))
+;;   (call-interactively 'iimage-mode))
+
+
 
 (global-auto-revert-mode t)  ;; Automatically show changes if the file has changed
+
+;;输入法
+;;(setq default-input-method "system")
+
 
 ;;键位绑定，解绑，转换
 ;; 修改默认键位映射，取消command键位
@@ -61,7 +96,7 @@
       (add-to-list 'default-frame-alist
                    (cons 'top  (/ (x-display-pixel-height) 15))) ;; 调整数字设置距离上下左右的距离
       (add-to-list 'default-frame-alist
-                   (cons 'left (/ (x-display-pixel-width) 10)))
+                   (cons 'left (/ (x-display-pixel-width) 6)))
       (add-to-list 'default-frame-alist
                    (cons 'height (/ (* 4 (x-display-pixel-height))
                                     (* 6 (frame-char-height)))))
@@ -210,27 +245,73 @@
 (defun my-markdown-to-org ()
   (interactive)
   (save-excursion
+    ;; 转换Markdown标题为Org-mode标题
     (goto-char (point-min))
-    (while (re-search-forward "^# \\(.*\\)" nil t)
-      (replace-match "* \\1"))
-    (goto-char (point-min))
-    (while (re-search-forward "^## \\(.*\\)" nil t)
-      (replace-match "** \\1"))
-    (goto-char (point-min))
-    (while (re-search-forward "^### \\(.*\\)" nil t)
-      (replace-match "*** \\1"))
-    (goto-char (point-min))
-    (while (re-search-forward "^#### \\(.*\\)" nil t)
-      (replace-match "**** \\1"))
-    (goto-char (point-min))
-    (while (re-search-forward "^##### \\(.*\\)" nil t)
-      (replace-match "***** \\1"))
-    (goto-char (point-min))
-    (while (re-search-forward "^###### \\(.*\\)" nil t)
-      (replace-match "****** \\1"))
-    (goto-char (point-min))
-    (while (re-search-forward "\\[\\(.*?\\)\\](\\(.*?\\))" nil t)
-      (replace-match "[[\\2][\\1]]"))))
+    (while (re-search-forward "^\s*\\(#+\\) \\(.*\\)" nil t)
+      (let ((level (length (match-string 1)))
+            (title1 (match-string 2)))
+        (replace-match (concat (make-string level ?*) " " title1)))))
+  ;; 转换Markdown链接为Org-mode链接,但是跳过图片链接
+  (goto-char (point-min))
+  (while (re-search-forward "\\[\\(.*?\\)\\](\\(.*?\\))" nil t)
+    (let ((title (match-string 1))
+          (url (match-string 2)))
+      (unless (and (string-match "\\(jpeg\\|png\\|svg\\)" url)
+                   (string-match "https" url))
+        (replace-match (format "[[%s][%s]]" url title)))))
+  ;; 转换Markdown代码块为Org-mode代码块
+  (goto-char (point-min))
+  (while (re-search-forward "```\\([^`]*\\)```" nil t)
+    (replace-match "#+begin_src\n\\1\n#+end_src")))
+
+
+
+
+;; (defun my-markdown-to-org ()
+;;   (interactive)
+;;   (save-excursion
+;;     (goto-char (point-min))
+;;     (while (re-search-forward "^\\(#+\\) \\(.*\\)" nil t)
+;;       (let ((level (length (match-string 1)))
+;;             (title (match-string 2)))
+;;         (replace-match (concat (make-string level ?*) " " title))))
+;;     (goto-char (point-min))
+;;     (while (re-search-forward "\\[\\(.*?\\)\\](\\(.*?\\))" nil t)
+;;       (replace-match "[[\\2][\\1]]"))))
+
+
+
+;; (defun my-markdown-to-org ()
+;;   (interactive)
+;;   (save-excursion
+;;     ;; 转换Markdown标题为Org-mode标题
+;;     (goto-char (point-min))
+;;     (while (re-search-forward "^# \\(.*\\)" nil t)
+;;       (replace-match "* \\1"))
+;;     (goto-char (point-min))
+;;     (while (re-search-forward "^## \\(.*\\)" nil t)
+;;       (replace-match "** \\1"))
+;;     (goto-char (point-min))
+;;     (while (re-search-forward "^### \\(.*\\)" nil t)
+;;       (replace-match "*** \\1"))
+;;     (goto-char (point-min))
+;;     (while (re-search-forward "^#### \\(.*\\)" nil t)
+;;       (replace-match "**** \\1"))
+;;     (goto-char (point-min))
+;;     (while (re-search-forward "^##### \\(.*\\)" nil t)
+;;       (replace-match "***** \\1"))
+;;     (goto-char (point-min))
+;;     (while (re-search-forward "^###### \\(.*\\)" nil t)
+;;       (replace-match "****** \\1"))
+;;     ;; 转换Markdown链接为Org-mode链接,但是跳过图片链接
+;;     (goto-char (point-min))
+;;     (while (re-search-forward "\\[\\(.*?\\)\\](\\(.*?\\))" nil t)
+;;       (replace-match "[[\\2][\\1]]"))
+
+;;     ;; 转换Markdown代码块为Org-mode代码块
+;;     (goto-char (point-min))
+;;     (while (re-search-forward "```\\([^`]*\\)```" nil t)
+;;       (replace-match "#+begin_src\n\\1\n#+end_src"))))
 
 
 

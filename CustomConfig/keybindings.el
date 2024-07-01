@@ -45,6 +45,10 @@
     "v j" '((lambda () (interactive)
               (find-file "~/Vandee/pkm/org/journal.org"))
             :wk "go to Journals")
+    "v v" '((lambda () (interactive)
+              (find-file "~/Vandee/pkm/org/Vandee.org"))
+            :wk "go to Vandee")
+
     "v T" '(my-tags-view :wk "my-tags-view")
     "v t" '(my-insert-timestamp :wk "insert-timestamp")
     ;;"v r" '(my-remove-extra-spaces :wk "my-remove-extra-spaces")
