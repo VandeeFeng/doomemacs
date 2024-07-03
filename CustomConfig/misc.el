@@ -38,14 +38,48 @@
 ;;   (call-interactively 'iimage-mode))
 
 
-
 (global-auto-revert-mode t)  ;; Automatically show changes if the file has changed
 
-;;输入法
+;;输入法 https://github.com/tumashu/pyim
 ;;(setq default-input-method "system")
+(global-set-key (kbd "C-\\") 'toggle-input-method)
+(use-package pyim
+  :init
+  :config
+  (pyim-default-scheme 'xiaohe-shuangpin)
+  (setq default-input-method "pyim")
+  )
+
+(use-package pyim-basedict
+  :config
+  (pyim-basedict-enable))
 
 
-;;键位绑定，解绑，转换
+
+(add-hook 'org-mode-hook
+          (lambda ()
+            (toggle-input-method)
+            (setq default-input-method "pyim")))
+
+;; 设置 pyim 探针
+;; 设置 pyim 探针设置，这是 pyim 高级功能设置，可以实现 *无痛* 中英文切换 :-)
+;; 我自己使用的中英文动态切换规则是：
+;; 1. 光标只有在注释里面时，才可以输入中文。
+;; 2. 光标前是汉字字符时，才能输入中文。
+;; 3. 使用 M-j 快捷键，强制将光标前的拼音字符串转换为中文。
+(setq-default pyim-english-input-switch-functions
+              '(;; pyim-probe-dynamic-english
+                pyim-probe-isearch-mode
+                ;; pyim-probe-program-mode
+                pyim-probe-org-structure-template
+                pyim-probe-evil-normal-mode
+                ))
+
+(setq-default pyim-punctuation-half-width-functions
+              '(pyim-probe-punctuation-line-beginning
+                pyim-probe-punctuation-after-punctuation))
+
+;; 键位绑定，解绑，转换
 ;; 修改默认键位映射，取消command键位
 (setq mac-option-modifier 'meta)
 ;;(setq mac-command-modifier 'none)
@@ -144,6 +178,8 @@
 (assoc-delete-all "Reload last session" +doom-dashboard-menu-sections)
 
 
+
+
 (setq-default
  window-combination-resize t
  x-stretch-cursor t
@@ -204,8 +240,8 @@
 
 (defun eye/search-or-by-rg ()
   "以空格分割关键词，以or条件搜索多个关键词的内容
-如果要搜索tag，可以输入`:tag1 :tag2 :tag3'
-"
+  如果要搜索tag，可以输入`:tag1 :tag2 :tag3'
+  "
   (interactive)
   (let* ((keywords (read-string "Or Search(rg): "))
 	 (regexp (eye--build-or-regexp-by-keywords keywords)))
@@ -216,8 +252,8 @@
 
 (defun eye/search-and-by-rg ()
   "以空格分割关键词，以and条件搜索同时包含多个关键词的内容
-如果要搜索tag，可以输入`:tag1 :tag2 :tag3'
-"
+  如果要搜索tag，可以输入`:tag1 :tag2 :tag3'
+  "
   (interactive)
   (let* ((keywords (read-string "And Search(rg): "))
 	 (regexp (eye--build-and-regexp-by-keywords keywords)))
@@ -261,8 +297,18 @@
         (replace-match (format "[[%s][%s]]" url title)))))
   ;; 转换Markdown代码块为Org-mode代码块
   (goto-char (point-min))
-  (while (re-search-forward "```\\([^`]*\\)```" nil t)
-    (replace-match "#+begin_src\n\\1\n#+end_src")))
+  (while (re-search-forward "^```" nil t)
+    (if (looking-back "^```")
+        (progn
+          (replace-match "#+begin_src")
+          (re-search-forward "^```" nil t)
+          (if (looking-back "^```")
+              (replace-match "#+end_src"))))))
+
+
+
+
+
 
 
 

@@ -67,3 +67,5 @@
 (package! evil-collection)
 ;;(package! rime :disable t)
 ;;(package! sis :disable t)
+(package! pyim)
+(package! pyim-basedict)
