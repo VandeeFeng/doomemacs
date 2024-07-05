@@ -37,6 +37,19 @@
 ;;     (set-face-underline-p 'org-link t))
 ;;   (call-interactively 'iimage-mode))
 
+;; https://emacs-china.org/t/org-display-inline-images/25886/4
+;; https://github.com/lujun9972/emacs-document/blob/master/org-mode/%E8%AE%BE%E7%BD%AEOrg%E4%B8%AD%E5%9B%BE%E7%89%87%E6%98%BE%E7%A4%BA%E7%9A%84%E5%B0%BA%E5%AF%B8.org
+;; (setq org-image-actual-width '(400)) 要在(org-toggle-inline-images)命令之前
+;; 或者在文档开头加上 #+ATTR_ORG: :width 600 ，并设置(setq org-image-actual-width nil)
+(add-hook 'org-mode-hook (lambda ()
+                           (setq org-image-actual-width '(400))
+                           (org-toggle-inline-images)
+                           (when org-startup-with-inline-images
+                             (org-display-inline-images t))))
+
+
+
+
 
 (global-auto-revert-mode t)  ;; Automatically show changes if the file has changed
 
