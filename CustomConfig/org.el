@@ -21,8 +21,8 @@
 ;; org-roam
 ;;
 ;;-------------------------------------------------------------------------------
-(setq org-roam-dailies-directory "~/Vandee/pkm/Journals/")
-(setq org-export-with-toc nil) ;;禁止生成toc
+;;(setq org-roam-dailies-directory "~/Vandee/pkm/Journals/")
+;;(setq org-export-with-toc nil) ;;禁止生成toc
 (use-package org-roam
   :ensure t
   ;;:demand t  ;; Ensure org-roam is loaded by default 如果没有这个后面的zotero链接函数会不起作用，还在解决.这样会导致Emacs在第一次开机启动的时候很慢
@@ -113,8 +113,10 @@
 
 
 ;;---------------------------------------------
-;;org-agenda-time-grid
+;;org-agenda
 ;;--------------------------------------------
+;;
+;;设置agenda时间线间隔
 (setq org-agenda-time-grid (quote ((daily today require-timed)
                                    (300
                                     600
@@ -127,6 +129,14 @@
                                    "......"
                                    "-----------------------------------------------------"
                                    )))
+
+;; 设置TODO状态
+(after! org
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "DOING(i)" "|" "DONE(d)")))
+
+  )
+
 ;;-------------------------------------------------------------------------------
 ;;
 ;; org
@@ -141,6 +151,8 @@
 (after! org
   ;; (server-start)
   ;; (require 'org-protocol)
+  :config
+  (setq org-export-with-toc nil) ;;禁止生成toc
   (org-link-set-parameters "zotero" :follow
                            (lambda (zpath)
                              (browse-url

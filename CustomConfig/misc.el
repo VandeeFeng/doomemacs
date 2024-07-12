@@ -8,6 +8,12 @@
 ;; globl settings
 ;;
 ;;-------------------------------------------------------------------------------------------
+;;
+;; ispell
+(setq ispell-program-name "/opt/homebrew/bin/ispell")
+;;
+;;
+;;
 ;; 显示图片
 ;; https://emacs.stackexchange.com/questions/3302/live-refresh-of-inline-images-with-org-display-inline-images
 ;;
@@ -61,6 +67,24 @@
   :config
   (pyim-default-scheme 'xiaohe-shuangpin)
   (setq default-input-method "pyim")
+  ;; 设置 pyim 探针
+  ;; 设置 pyim 探针设置，这是 pyim 高级功能设置，可以实现 *无痛* 中英文切换 :-)
+  ;; 我自己使用的中英文动态切换规则是：
+  ;; 1. 光标只有在注释里面时，才可以输入中文。
+  ;; 2. 光标前是汉字字符时，才能输入中文。
+  ;; 3. 使用 M-j 快捷键，强制将光标前的拼音字符串转换为中文。
+  (setq-default pyim-english-input-switch-functions
+                '(pyim-probe-dynamic-english
+                  pyim-probe-isearch-mode
+                  ;; pyim-probe-program-mode
+                  pyim-probe-org-structure-template
+                  pyim-probe-evil-normal-mode
+                  ))
+
+  (setq-default pyim-punctuation-half-width-functions
+                '(pyim-probe-punctuation-line-beginning
+                  pyim-probe-punctuation-after-punctuation))
+
   )
 
 (use-package pyim-basedict
@@ -74,23 +98,6 @@
             (toggle-input-method)
             (setq default-input-method "pyim")))
 
-;; 设置 pyim 探针
-;; 设置 pyim 探针设置，这是 pyim 高级功能设置，可以实现 *无痛* 中英文切换 :-)
-;; 我自己使用的中英文动态切换规则是：
-;; 1. 光标只有在注释里面时，才可以输入中文。
-;; 2. 光标前是汉字字符时，才能输入中文。
-;; 3. 使用 M-j 快捷键，强制将光标前的拼音字符串转换为中文。
-(setq-default pyim-english-input-switch-functions
-              '(;; pyim-probe-dynamic-english
-                pyim-probe-isearch-mode
-                ;; pyim-probe-program-mode
-                pyim-probe-org-structure-template
-                pyim-probe-evil-normal-mode
-                ))
-
-(setq-default pyim-punctuation-half-width-functions
-              '(pyim-probe-punctuation-line-beginning
-                pyim-probe-punctuation-after-punctuation))
 
 ;; 键位绑定，解绑，转换
 ;; 修改默认键位映射，取消command键位
@@ -616,5 +623,3 @@
                   (setq word-wrap nil)
                   (make-local-variable 'auto-hscroll-mode)
                   (setq auto-hscroll-mode nil)))))
-
-;; rss

@@ -42,7 +42,12 @@ $ brew install emacs-plus@26 [options] # install Emacs 26
 
 
 
-  --with-native-comp
+```
+brew tap d12frosted/emacs-plus
+brew install emacs-plus@29 --with-native-comp --with-debug --with-ctags --with-imagemagick
+```
+
+
 
 增加图标：
 

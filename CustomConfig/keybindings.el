@@ -37,7 +37,7 @@
     "v c" '(org-capture :wk "org-capture")
     "v r" '(org-roam-capture :wk "org-roam-capture")
 
-    ;;"v t" '(chinhant-grab-mac-link :wk "网页文章标题获取")
+    "v d" '(org-todo :wk "编辑TODO状态")
     "v g" '(:ignore t :wk "gpt")
     "v g s" '(gptel-send :wk "gpt发送")
     "v g n" '(gptel :wk "gpt新buffer")
