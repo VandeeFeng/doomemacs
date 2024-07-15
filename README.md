@@ -13,7 +13,13 @@
 
 [Emacs China](https://emacs-china.org/)  论坛
 
-**TIP**：`spc-h rr`  reload doomemac，热重启，每次更新完package，config，不重启改动不生效。
+**TIP**：
+
+- `spc-h rr`  reload doomemac，热重启，每次更新完package，config，不重启改动不生效。
+
+- `$ emacs -nw`：终端里打开非GUI。
+
+  
 
 # Installation
 

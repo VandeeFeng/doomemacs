@@ -37,7 +37,7 @@
   (org-roam-capture-templates
    `(("n" "note" plain "%?"
       :if-new (file+head "${title}.org"
-                         "#+TITLE: ${title}\n#+UID: %<%Y%m%d%H%M%S>\n#+FILETAGS: \n#+TYPE: \n#+SOURCE: \n#+DATE: %<%Y-%m-%d>\n")
+                         "#+TITLE: ${title}\n#+UID: %<%Y%m%d%H%M%S>\n#+FILETAGS: \n#+TYPE: Article \n#+SOURCE:  %^{source}\n#+DATE: %<%Y-%m-%d>\n")
       :unnarrowed t))
    )
   (org-roam-completion-everywhere t)

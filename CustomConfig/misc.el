@@ -12,8 +12,13 @@
 ;; ispell
 (setq ispell-program-name "/opt/homebrew/bin/ispell")
 ;;
+;;auto-wrap
+(global-visual-line-mode 1)  ;1 for on, 0 for off.
+
+(global-auto-revert-mode t)  ;; Automatically show changes if the file has changed
 ;;
 ;;
+;;;;-------------------------------------------------------------------------------------------
 ;; 显示图片
 ;; https://emacs.stackexchange.com/questions/3302/live-refresh-of-inline-images-with-org-display-inline-images
 ;;
@@ -57,8 +62,9 @@
 
 
 
-(global-auto-revert-mode t)  ;; Automatically show changes if the file has changed
 
+
+;;-------------------------------------------------------------------------------------------
 ;;输入法 https://github.com/tumashu/pyim
 ;;(setq default-input-method "system")
 (global-set-key (kbd "C-\\") 'toggle-input-method)
@@ -98,10 +104,11 @@
             (toggle-input-method)
             (setq default-input-method "pyim")))
 
-
+;;-------------------------------------------------------------------------------------------
 ;; 键位绑定，解绑，转换
 ;; 修改默认键位映射，取消command键位
 (setq mac-option-modifier 'meta)
+
 ;;(setq mac-command-modifier 'none)
 ;;(global-set-key (kbd "M-z") nil)
 
@@ -124,6 +131,7 @@
 ;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen)
 ;;
 ;;
+;;-------------------------------------------------------------------------------------------
 ;;字体
 (setq doom-font (font-spec :family "霞鹜文楷等宽" :weight 'regular :size 14))
 
@@ -143,6 +151,7 @@
 ;;   (set-fontset-font t 'mathematical (font-spec :family "Symbola"))
 ;;   (set-fontset-font t 'emoji (font-spec :family "Symbola")))
 
+;;-------------------------------------------------------------------------------------------
 ;; 窗口大小设定
 (if (not (eq window-system nil))
     (progn
@@ -169,9 +178,6 @@
 ;; change `org-directory'. It must be set before org loads!
 ;; (setq org-directory "~/Vandee/org/notes/")
 
-
-;;auto-wrap
-(global-visual-line-mode 1)  ;1 for on, 0 for off.
 
 
 ;; shell
@@ -217,8 +223,10 @@
 (global-subword-mode t) ;; 启用 global-subword-mode 后，Emacs 会在全局范围内使用 subword-mode，这意味着在所有的缓冲区中，你都可以进行子词的导航和编辑。这在处理代码或文本时非常有用，特别是当你需要对单个字符或字符组合进行精确编辑时。
 ;;
 ;;
+;;
+;;-------------------------------------------------------------------------------------------
 ;; 自定义搜索
-(defun eye--build-or-regexp-by-keywords (keywords)
+(defun my--build-or-regexp-by-keywords (keywords)
   "构建or语法的正则"
   (let (wordlist tmp regexp)
     (setq wordlist (split-string keywords " "))
@@ -229,7 +237,7 @@
     regexp
     ))
 
-(defun eye--build-and-regexp-by-keywords (keywords)
+(defun my--build-and-regexp-by-keywords (keywords)
   "构建and语法的正则"
   (let (reg wlist fullreg reglist)
     (setq wlist (split-string keywords " "))
@@ -258,7 +266,7 @@
     fullreg
     ))
 
-(defun eye/search-or-by-rg ()
+(defun my/search-or-by-rg ()
   "以空格分割关键词，以or条件搜索多个关键词的内容
   如果要搜索tag，可以输入`:tag1 :tag2 :tag3'
   "
@@ -270,7 +278,7 @@
     ))
 
 
-(defun eye/search-and-by-rg ()
+(defun my/search-and-by-rg ()
   "以空格分割关键词，以and条件搜索同时包含多个关键词的内容
   如果要搜索tag，可以输入`:tag1 :tag2 :tag3'
   "
@@ -623,3 +631,19 @@
                   (setq word-wrap nil)
                   (make-local-variable 'auto-hscroll-mode)
                   (setq auto-hscroll-mode nil)))))
+
+
+(use-package company
+  :defer 0.1
+  :config
+  (global-company-mode t)
+  (setq-default
+   company-idle-delay 0.05
+   company-require-match nil
+   company-minimum-prefix-length 1
+
+   ;; get only preview
+   company-frontends '(company-preview-frontend)
+   ;; also get a drop down
+   ;; company-frontends '(company-pseudo-tooltip-frontend company-preview-frontend)
+   ))

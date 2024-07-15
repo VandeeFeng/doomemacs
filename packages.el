@@ -48,7 +48,7 @@
 ;; (unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
-(package! org :pin "806abc5a2bbcb5f884467a0145547221ba09eb59")
+;;(package! org :pin "806abc5a2bbcb5f884467a0145547221ba09eb59")
 (package! org-roam)
 (package! org-roam-ui)
 (package! general)
@@ -75,3 +75,4 @@
 ;;(package! jupyter)
 ;;(package! blacken)
 ;;(package! ein)
+;;(package! codeium :recipe (:host github :repo "Exafunction/codeium.el")) ;;代码补全
