@@ -72,7 +72,6 @@
 ;;(package! khoj)
 (package! anaconda-mode)
 ;;(package! elpy)
-;;(package! jupyter)
+(package! jupyter)
 ;;(package! blacken)
-;;(package! ein)
 ;;(package! codeium :recipe (:host github :repo "Exafunction/codeium.el")) ;;代码补全

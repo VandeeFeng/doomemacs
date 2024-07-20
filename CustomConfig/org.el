@@ -133,8 +133,8 @@
 ;; 设置TODO状态
 (after! org
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "DOING(i)" "|" "DONE(d)")))
-
+        '((sequence "TODO(t)" "DOING(i)" "|" "DONE(d@)")))
+  (setq org-log-done 'time) ;; 每次当你将一个项从 TODO (not-done) 状态变成任意的 DONE 状态时，那么，它就会自动在标题的下面插入一行下面的内容：CLOSED: [timestamp]  https://emacsist.github.io/emacsist/orgmode/orgmode%E6%89%8B%E5%86%8C%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0.html#org6796967
   )
 
 ;;-------------------------------------------------------------------------------
@@ -192,30 +192,51 @@
   (add-to-list 'org-capture-templates
                '("cw" "Web Collections" item
                  (file+headline "~/Vandee/pkm/org/websites.org" "实用")
-                 "%?"))
+                 "Source: %^{Source}\nIntro: %^{Intro}%?\n"))
   (add-to-list 'org-capture-templates
                '("ct" "Tool Collections" item
                  (file+headline "~/Vandee/pkm/org/tools.org" "实用")
-                 "%?"))
+                 "Source: %^{Source}\nIntro: %^{Intro}%?\n"))
   (add-to-list 'org-capture-templates
-               '("cc" "Clip Collections" entry
-                 (file+headline "~/Vandee/pkm/org/clip.org" "Clip")
+               '("cq" "Quote Collections" entry
+                 (file+headline "~/Vandee/pkm/org/quotes.org" "Quotes")
                  "* %^{heading} %^g\n%T\nSource: %^{source}\n%?"))
-  ;; (add-to-list 'org-capture-templates
-  ;;              '("m" "Memo" entry
-  ;;                (file+headline "~/Vandee/pkm/org/memo.org" "Memo")
-  ;;                "* %^{heading} %^g\n%T\nSource: %^{source}\n%?"))
+  (add-to-list 'org-capture-templates
+               '("cc" "Code Collections" entry
+                 (file+headline "~/Vandee/pkm/org/codes.org" "Codes")
+                 "* %U - %^{Intro} %^G\nSource: %^{source}\n%?"))
 
 
 
-  (defun my-tags-view ()
-    "Show all headlines for org files matching a TAGS criterion."
-    (interactive)
-    (let* ((org-agenda-files '("~/Vandee/pkm"))
-           (org-tags-match-list-sublevels nil))
-      (call-interactively 'org-tags-view)))
+
+  (setq org-tag-alist '((:startgroup . nil)
+                        ("@code" . c)
+                        (:grouptags . nil)
+                        ("@Python" . p)
+                        ("@JavaScript" . j)
+                        (:endgroup . nil)
+                        ("LLM" . ?l) ("RAG" . ?r)
+                        (:startgroup . nil)
+                        ("@vandee" . v)
+                        (:endgroup . nil)
+                        ("Thoughts" . ?t) ("Quote" . ?q)))
 
   )
+;; (add-to-list 'org-capture-templates
+;;              '("m" "Memo" entry
+;;                (file+headline "~/Vandee/pkm/org/memo.org" "Memo")
+;;                "* %^{heading} %^g\n%T\nSource: %^{source}\n%?"))
+
+
+
+(defun my-tags-view ()
+  "Show all headlines for org files matching a TAGS criterion."
+  (interactive)
+  (let* ((org-agenda-files '("~/Vandee/pkm"))
+         (org-tags-match-list-sublevels nil))
+    (call-interactively 'org-tags-view)))
+
+
 ;;https://emacs-china.org/t/org-mode-gtd-faq/196/16
 ;;很多时候我自己的tag都是唯一的，为了能够在不同的文件中使用同一个tag，或者说是自动选择和查看已经有的tag，我是这样设置的：
 (setq-default org-complete-tags-always-offer-all-agenda-tags t)
@@ -307,10 +328,11 @@
 ;; (setq org-protocol-protocol 'org-roam)
 ;; 盘古
 ;;https://github.com/coldnew/pangu-spacing
-(use-package pangu-spacing)
-(add-hook 'org-mode-hook
-          '(lambda ()
-             (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)))
+(use-package pangu-spacing
+  :config
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (set (make-local-variable 'pangu-spacing-real-insert-separtor) t))))
 
 
 ;; https://emacs-china.org/t/org-mode/22313

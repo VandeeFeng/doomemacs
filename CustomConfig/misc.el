@@ -9,6 +9,17 @@
 ;;
 ;;-------------------------------------------------------------------------------------------
 ;;
+;;
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (julia . t)
+   (python . t)
+   (js . t)
+   (jupyter . t)))
+
+
+
 ;; ispell
 (setq ispell-program-name "/opt/homebrew/bin/ispell")
 ;;
@@ -413,12 +424,16 @@
 
 ;; gtpel 设置默认ollama 模型
 (setq
- gptel-model "llama3:latest"
+ gptel-model "qwen2:7b"
  gptel-backend (gptel-make-ollama "Ollama"
                  :host "localhost:11434"
                  :stream t
-                 :models '("llama3:latest")))
+                 :models '("qwen2:7b")))
 
+(gptel-make-ollama "Ollama"             ;Any name of your choosing
+  :host "localhost:11434"               ;Where it's running
+  :stream t                             ;Stream responses
+  :models '("llama3:latest"))          ;List of models
 
 ;; evil settings
 
@@ -640,10 +655,71 @@
   (setq-default
    company-idle-delay 0.05
    company-require-match nil
-   company-minimum-prefix-length 1
+   company-minimum-prefix-length 2
 
    ;; get only preview
    company-frontends '(company-preview-frontend)
    ;; also get a drop down
    ;; company-frontends '(company-pseudo-tooltip-frontend company-preview-frontend)
    ))
+
+
+
+;; (use-package! lsp-bridge
+;;   :config
+;;   (setq lsp-bridge-enable-log nil))
+
+
+
+;;corfu
+;;
+
+(use-package corfu
+  ;; Optional customizations
+  ;; :custom
+  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  ;; (corfu-auto t)                 ;; Enable auto completion
+  ;; (corfu-separator ?\s)          ;; Orderless field separator
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
+
+  ;; Enable Corfu only for certain modes.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
+  ;; Recommended: Enable Corfu globally.  This is recommended since Dabbrev can
+  ;; be used globally (M-/).  See also the customization variable
+  ;; `global-corfu-modes' to exclude certain modes.
+  :init
+  (global-corfu-mode))
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (setq-local corfu-auto nil)
+            (corfu-mode)))
+
+;; A few more useful configurations...
+(use-package emacs
+  :custom
+  ;; TAB cycle if there are only few candidates
+  ;; (completion-cycle-threshold 3)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (tab-always-indent 'complete)
+
+  ;; Emacs 30 and newer: Disable Ispell completion function. As an alternative,
+  ;; try `cape-dict'.
+  ;;(text-mode-ispell-word-completion nil)
+
+  ;; Emacs 28 and newer: Hide commands in M-x which do not apply to the current
+  ;; mode.  Corfu commands are hidden, since they are not used via M-x. This
+  ;; setting is useful beyond Corfu.
+  (read-extended-command-predicate #'command-completion-default-include-p))
+
+
+
