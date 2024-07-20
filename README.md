@@ -181,7 +181,22 @@ Or, if you don't want/need a background service you can just run:
 
   
 
-- 
+- 设置图片显示大小
+
+  ```
+  ;;https://github.com/lujun9972/emacs-document/blob/master/org-mode/%E8%AE%BE%E7%BD%AEOrg%E4%B8%AD%E5%9B%BE%E7%89%87%E6%98%BE%E7%A4%BA%E7%9A%84%E5%B0%BA%E5%AF%B8.org
+  ;; (setq org-image-actual-width '(400)) 要在(org-toggle-inline-images)命令之前
+  ;; 或者在文档开头加上 #+ATTR_ORG: :width 600 ，并设置(setq org-image-actual-width nil)
+  (add-hook 'org-mode-hook (lambda ()
+                             (setq org-image-actual-width '(400))
+                             (org-toggle-inline-images)
+                             (when org-startup-with-inline-images
+                               (org-display-inline-images t))))
+  
+  
+  ```
+
+  
 
 
 
@@ -263,11 +278,67 @@ Or, if you don't want/need a background service you can just run:
 :lang
 (python +lsp +conda +pyright) 
 ```
+配置packages.el
+
+```
+(package! jupyter)
+(package! anaconda-mode)
+```
+
+
+
 配置环境
 
-`(setq python-shell-virtualenv-root "~/miniconda3/envs") ;;set env, conda or else`
+```
+(use-package conda
+  :config
+  (setq conda-anaconda-home "~/miniconda3/")
+  ;; if you want interactive shell support, include:
+  (conda-env-initialize-interactive-shells)
+  ;; if you want eshell support, include:
+  (conda-env-initialize-eshell)
+  (conda-env-autoactivate-mode t)
+  (setq conda-env-home-directory "~/miniconda3/"))
 
-packages.el  add `(package! python-black)`
+```
+
+其他配置：
+
+```
+;;jupter
+;;jupter 需要安装jupyter lab 或 jupyter notebook:https://docs.jupyter.org/en/latest/install.html
+;;https://github.com/emacs-jupyter/jupyter
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (julia . t)
+   (python . t)
+   (js . t)
+   (jupyter . t)))
+
+(use-package jupyter
+  ;; :elpaca t
+  :init
+  :custom
+  (org-babel-jupyter-override-src-block "python")
+  :config
+  (setq ob-async-no-async-languages-alist '("jupyter-python" "jupyter-julia"))
+  (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
+                                                       (:session . "py")
+                                                       (:kernel . "base"))))
+                                                       
+;; pyright
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp))))  ; or lsp-deferred
+
+
+```
+
+
 
 # Reference
 
