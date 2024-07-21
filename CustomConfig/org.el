@@ -24,7 +24,7 @@
 ;;(setq org-roam-dailies-directory "~/Vandee/pkm/Journals/")
 ;;(setq org-export-with-toc nil) ;;禁止生成toc
 (use-package org-roam
-  :ensure t
+  :defer t
   ;;:demand t  ;; Ensure org-roam is loaded by default 如果没有这个后面的zotero链接函数会不起作用，还在解决.这样会导致Emacs在第一次开机启动的时候很慢
   :init
   (setq org-roam-v2-ack t)
@@ -262,24 +262,6 @@
           org-roam-ui-open-on-start nil))
   )
 
-;; 显示当前 heading 内容并折叠其他
-;; https://emacs-china.org/t/org-mode/23205
-(defun my/org-show-current-heading-tidily ()
-  (interactive)
-  "Show next entry, keeping other entries closed."
-  (if (save-excursion (end-of-line) (outline-invisible-p))
-      (progn (org-show-entry) (show-children))
-    (save-excursion
-      (outline-back-to-heading)
-      (unless (and (bolp) (org-on-heading-p))
-	(org-up-heading-safe)
-	(hide-subtree)
-	(error "Boundary reached"))
-      (org-overview)
-      (org-reveal t)
-      (org-show-entry)
-      (show-children))
-    ))
 
 ;; Zotreo
 ;; https://hsingko.pages.dev/post/2022/07/04/zotero-and-orgmode/

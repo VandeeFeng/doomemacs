@@ -27,14 +27,20 @@
 
 ;; (add-hook 'python-mode-hook 'anaconda-mode)
 (use-package conda
+  :defer t
   :config
   (setq conda-anaconda-home "~/miniconda3/")
-  ;; if you want interactive shell support, include:
-  (conda-env-initialize-interactive-shells)
-  ;; if you want eshell support, include:
-  (conda-env-initialize-eshell)
-  (conda-env-autoactivate-mode t)
-  (setq conda-env-home-directory "~/miniconda3/"))
+  (defun conda-setup ()
+    (conda-env-initialize-interactive-shells)
+    (conda-env-initialize-eshell)
+    (conda-env-autoactivate-mode t)
+    (setq conda-env-home-directory "~/miniconda3/"))
+
+  (use-package eshell
+    :hook (eshell-mode . conda-setup))
+
+  (use-package python
+    :hook (python-mode . conda-setup)))
 
 ;;(add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode)) ;; 默认使用 python-ts-mode，需要安装 python 的 treesitter
 ;; ;;python black
@@ -71,7 +77,7 @@
 ;;https://github.com/emacs-jupyter/jupyter
 (use-package jupyter
   ;; :elpaca t
-  :init
+  :defer t
   :custom
   (org-babel-jupyter-override-src-block "python")
   :config
@@ -175,26 +181,19 @@
 ;;https://github.com/ananthakumaran/tide
 
 
-(dolist (hook (list
-               'js2-mode-hook
-               'rjsx-mode-hook
-               'typescript-mode-hook
-               ))
-  (add-hook hook (lambda ()
-                   ;; 初始化 tide
-                   (tide-setup)
-                   ;; 当 tsserver 服务没有启动时自动重新启动
-                   (unless (tide-current-server)
-                     (tide-restart-server))
-                   )))
-
-
-;; ;;javascript
-
-;; if you use typescript-mode
 (use-package tide
   :ensure t
   :after (typescript-mode company flycheck)
+  :config
+  (dolist (hook (list 'js2-mode-hook
+                      'rjsx-mode-hook
+                      'typescript-mode-hook))
+    (add-hook hook (lambda ()
+                     ;; 初始化 tide
+                     (tide-setup)
+                     ;; 当 tsserver 服务没有启动时自动重新启动
+                     (unless (tide-current-server)
+                       (tide-restart-server)))))
   :hook ((typescript-mode . tide-setup)
          (typescript-mode . tide-hl-identifier-mode)
          (before-save . tide-format-before-save))
@@ -202,8 +201,8 @@
   (add-hook 'js2-mode-hook #'setup-tide-mode)
   ;; configure javascript-tide checker to run after your default javascript checker
   ;;(flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
-
   (add-hook 'tsx-ts-mode-hook #'setup-tide-mode))
+
 
 
 ;;-----------------------------------------------------------------------------

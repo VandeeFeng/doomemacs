@@ -8,10 +8,157 @@
 ;;
 
 
+;;----------------------------------------------------------------------------
+;;自定义函数
+;;----------------------------------------------------------------------------
+;;
+;; 显示当前 heading 内容并折叠其他
+;; https://emacs-china.org/t/org-mode/23205
+(defun my/org-show-current-heading-tidily ()
+  (interactive)
+  "Show next entry, keeping other entries closed."
+  (if (save-excursion (end-of-line) (outline-invisible-p))
+      (progn (org-show-entry) (show-children))
+    (save-excursion
+      (outline-back-to-heading)
+      (unless (and (bolp) (org-on-heading-p))
+	(org-up-heading-safe)
+	(hide-subtree)
+	(error "Boundary reached"))
+      (org-overview)
+      (org-reveal t)
+      (org-show-entry)
+      (show-children))
+    ))
+
+
 (defun my-insert-timestamp ()
   "Insert a custom formatted timestamp."
   (interactive)
   (insert (format-time-string "<%Y-%m-%d %a %H:%M>")))
+
+
+
+;; 自定义搜索
+(defun my--build-or-regexp-by-keywords (keywords)
+  "构建or语法的正则"
+  (let (wordlist tmp regexp)
+    (setq wordlist (split-string keywords " "))
+    (dolist (word wordlist)
+      (setq tmp (format "(%s)" word))
+      (if regexp (setq regexp (concat regexp "|")))
+      (setq regexp (concat regexp tmp)))
+    regexp
+    ))
+
+(defun my--build-and-regexp-by-keywords (keywords)
+  "构建and语法的正则"
+  (let (reg wlist fullreg reglist)
+    (setq wlist (split-string keywords " "))
+    (dolist (w1 wlist)
+      (setq reg w1)
+      (dolist (w2 wlist)
+	(unless (string-equal w1 w2)
+	  (setq reg (format "%s.*%s" reg w2))))
+      (setq reg (format "(%s)" reg))
+      (add-to-list 'reglist reg)
+      )
+    ;; 还要反过来一次
+    (dolist (w1 wlist)
+      (setq reg w1)
+      (dolist (w2 (reverse wlist))
+	(unless (string-equal w1 w2)
+	  (setq reg (format "%s.*%s" reg w2))))
+      (setq reg (format "(%s)" reg))
+      (add-to-list 'reglist reg)
+      )
+
+    (dolist (r reglist)
+      (if fullreg (setq fullreg (concat fullreg "|")))
+      (setq fullreg (concat fullreg r)))
+
+    fullreg
+    ))
+
+(defun my/search-or-by-rg ()
+  "以空格分割关键词，以or条件搜索多个关键词的内容
+  如果要搜索tag，可以输入`:tag1 :tag2 :tag3'
+  "
+  (interactive)
+  (let* ((keywords (read-string "Or Search(rg): "))
+	 (regexp (eye--build-or-regexp-by-keywords keywords)))
+    (message "search regexp:%s" regexp)
+    (color-rg-search-input regexp)
+    ))
+
+
+(defun my/search-and-by-rg ()
+  "以空格分割关键词，以and条件搜索同时包含多个关键词的内容
+  如果要搜索tag，可以输入`:tag1 :tag2 :tag3'
+  "
+  (interactive)
+  (let* ((keywords (read-string "And Search(rg): "))
+	 (regexp (eye--build-and-regexp-by-keywords keywords)))
+    (message "search regexp:%s" regexp)
+    (color-rg-search-input regexp)
+    ))
+
+
+;; 去除多余空格
+
+;; (defun my-remove-extra-spaces ()
+;;   "Remove extra spaces in the current buffer."
+;;   (interactive)
+;;   (replace-regexp "\\(\\s-\\)\\s-" "\\1" nil (point-min) (point-max)))
+
+;; ;; 绑定到一个快捷键，例如 C-c s
+;; (global-set-key (kbd "C-c s") 'my-remove-extra-spaces)
+
+;;-------------------------------------------------------------------------------------------
+;;
+;; markdown to org
+;;
+;;-------------------------------------------------------------------------------------------
+
+(defun my-markdown-to-org ()
+  (interactive)
+  (save-excursion
+    ;; 转换Markdown标题为Org-mode标题
+    (goto-char (point-min))
+    (while (re-search-forward "^\s*\\(#+\\) \\(.*\\)" nil t)
+      (let ((level (length (match-string 1)))
+            (title1 (match-string 2)))
+        (replace-match (concat (make-string level ?*) " " title1)))))
+  ;; 转换Markdown链接为Org-mode链接,但是跳过图片链接
+  (goto-char (point-min))
+  (while (re-search-forward "\\[\\(.*?\\)\\](\\(.*?\\))" nil t)
+    (let ((title (match-string 1))
+          (url (match-string 2)))
+      (unless (and (string-match "\\(jpeg\\|png\\|svg\\)" url)
+                   (string-match "https" url))
+        (replace-match (format "[[%s][%s]]" url title)))))
+  ;; 转换Markdown代码块为Org-mode代码块
+  (goto-char (point-min))
+  (while (re-search-forward "^```" nil t)
+    (if (looking-back "^```")
+        (progn
+          (replace-match "#+begin_src")
+          (re-search-forward "^```" nil t)
+          (if (looking-back "^```")
+              (replace-match "#+end_src"))))))
+
+
+
+
+
+
+
+
+
+
+;;----------------------------------------------------------------------------
+;; general
+;;----------------------------------------------------------------------------
 
 (use-package general
   :init

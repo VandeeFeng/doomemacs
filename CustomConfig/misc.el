@@ -36,20 +36,17 @@
 ;; (auto-image-file-mode t)
 ;; (add-hook 'org-mode-hook (lambda () (org-display-inline-images t)))
 
-;; ;; -- Display images in org mode
-;; ;; enable image mode first
+;; -- Display images in org mode
+;; enable image mode first
 ;; (iimage-mode)
 ;; ;; add the org file link format to the iimage mode regex
 ;; (add-to-list 'iimage-mode-image-regex-alist
 ;;              (cons (concat "\\[\\[file:\\(~?" iimage-mode-image-filename-regex "\\)\\]")  1))
 ;; ;;  add a hook so we can display images on load
-;; (add-hook 'org-mode-hook '(lambda () (org-turn-on-iimage-in-org)))
+;; (autoload 'iimage-mode "iimage" "Support Inline image minor mode." t)
+;; (autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
 ;; ;; function to setup images for display on load
-;; (defun org-turn-on-iimage-in-org ()
-;;   "display images in your org file"
-;;   (interactive)
-;;   (turn-on-iimage-mode)
-;;   (set-face-underline-p 'org-link nil))
+
 ;; ;; function to toggle images in a org bugger
 ;; (defun org-toggle-iimage-in-org ()
 ;;   "display images in your org file"
@@ -57,17 +54,20 @@
 ;;   (if (face-underline-p 'org-link)
 ;;       (set-face-underline-p 'org-link nil)
 ;;     (set-face-underline-p 'org-link t))
-;;   (call-interactively 'iimage-mode))
+;;   (iimage-mode))
 
 ;; https://emacs-china.org/t/org-display-inline-images/25886/4
-;; https://github.com/lujun9972/emacs-document/blob/master/org-mode/%E8%AE%BE%E7%BD%AEOrg%E4%B8%AD%E5%9B%BE%E7%89%87%E6%98%BE%E7%A4%BA%E7%9A%84%E5%B0%BA%E5%AF%B8.org
+;;https://github.com/lujun9972/emacs-document/blob/master/org-mode/%E8%AE%BE%E7%BD%AEOrg%E4%B8%AD%E5%9B%BE%E7%89%87%E6%98%BE%E7%A4%BA%E7%9A%84%E5%B0%BA%E5%AF%B8.org
 ;; (setq org-image-actual-width '(400)) 要在(org-toggle-inline-images)命令之前
 ;; 或者在文档开头加上 #+ATTR_ORG: :width 600 ，并设置(setq org-image-actual-width nil)
-(add-hook 'org-mode-hook (lambda ()
-                           (setq org-image-actual-width '(400))
-                           (org-toggle-inline-images)
-                           (when org-startup-with-inline-images
-                             (org-display-inline-images t))))
+
+(after! org
+  (setq org-startup-with-inline-images t)
+  (add-hook 'org-mode-hook (lambda ()
+                             (setq org-image-actual-width '(400))
+                             (org-toggle-inline-images)
+                             (when org-startup-with-inline-images
+                               (org-display-inline-images t)))))
 
 
 
@@ -102,6 +102,10 @@
                 '(pyim-probe-punctuation-line-beginning
                   pyim-probe-punctuation-after-punctuation))
 
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (toggle-input-method)
+              (setq default-input-method "pyim")))
   )
 
 (use-package pyim-basedict
@@ -110,10 +114,6 @@
 
 
 
-(add-hook 'org-mode-hook
-          (lambda ()
-            (toggle-input-method)
-            (setq default-input-method "pyim")))
 
 ;;-------------------------------------------------------------------------------------------
 ;; 键位绑定，解绑，转换
@@ -235,116 +235,6 @@
 ;;
 ;;
 ;;
-;;-------------------------------------------------------------------------------------------
-;; 自定义搜索
-(defun my--build-or-regexp-by-keywords (keywords)
-  "构建or语法的正则"
-  (let (wordlist tmp regexp)
-    (setq wordlist (split-string keywords " "))
-    (dolist (word wordlist)
-      (setq tmp (format "(%s)" word))
-      (if regexp (setq regexp (concat regexp "|")))
-      (setq regexp (concat regexp tmp)))
-    regexp
-    ))
-
-(defun my--build-and-regexp-by-keywords (keywords)
-  "构建and语法的正则"
-  (let (reg wlist fullreg reglist)
-    (setq wlist (split-string keywords " "))
-    (dolist (w1 wlist)
-      (setq reg w1)
-      (dolist (w2 wlist)
-	(unless (string-equal w1 w2)
-	  (setq reg (format "%s.*%s" reg w2))))
-      (setq reg (format "(%s)" reg))
-      (add-to-list 'reglist reg)
-      )
-    ;; 还要反过来一次
-    (dolist (w1 wlist)
-      (setq reg w1)
-      (dolist (w2 (reverse wlist))
-	(unless (string-equal w1 w2)
-	  (setq reg (format "%s.*%s" reg w2))))
-      (setq reg (format "(%s)" reg))
-      (add-to-list 'reglist reg)
-      )
-
-    (dolist (r reglist)
-      (if fullreg (setq fullreg (concat fullreg "|")))
-      (setq fullreg (concat fullreg r)))
-
-    fullreg
-    ))
-
-(defun my/search-or-by-rg ()
-  "以空格分割关键词，以or条件搜索多个关键词的内容
-  如果要搜索tag，可以输入`:tag1 :tag2 :tag3'
-  "
-  (interactive)
-  (let* ((keywords (read-string "Or Search(rg): "))
-	 (regexp (eye--build-or-regexp-by-keywords keywords)))
-    (message "search regexp:%s" regexp)
-    (color-rg-search-input regexp)
-    ))
-
-
-(defun my/search-and-by-rg ()
-  "以空格分割关键词，以and条件搜索同时包含多个关键词的内容
-  如果要搜索tag，可以输入`:tag1 :tag2 :tag3'
-  "
-  (interactive)
-  (let* ((keywords (read-string "And Search(rg): "))
-	 (regexp (eye--build-and-regexp-by-keywords keywords)))
-    (message "search regexp:%s" regexp)
-    (color-rg-search-input regexp)
-    ))
-
-
-;; 去除多余空格
-
-;; (defun my-remove-extra-spaces ()
-;;   "Remove extra spaces in the current buffer."
-;;   (interactive)
-;;   (replace-regexp "\\(\\s-\\)\\s-" "\\1" nil (point-min) (point-max)))
-
-;; ;; 绑定到一个快捷键，例如 C-c s
-;; (global-set-key (kbd "C-c s") 'my-remove-extra-spaces)
-
-;;-------------------------------------------------------------------------------------------
-;;
-;; markdown to org
-;;
-;;-------------------------------------------------------------------------------------------
-
-(defun my-markdown-to-org ()
-  (interactive)
-  (save-excursion
-    ;; 转换Markdown标题为Org-mode标题
-    (goto-char (point-min))
-    (while (re-search-forward "^\s*\\(#+\\) \\(.*\\)" nil t)
-      (let ((level (length (match-string 1)))
-            (title1 (match-string 2)))
-        (replace-match (concat (make-string level ?*) " " title1)))))
-  ;; 转换Markdown链接为Org-mode链接,但是跳过图片链接
-  (goto-char (point-min))
-  (while (re-search-forward "\\[\\(.*?\\)\\](\\(.*?\\))" nil t)
-    (let ((title (match-string 1))
-          (url (match-string 2)))
-      (unless (and (string-match "\\(jpeg\\|png\\|svg\\)" url)
-                   (string-match "https" url))
-        (replace-match (format "[[%s][%s]]" url title)))))
-  ;; 转换Markdown代码块为Org-mode代码块
-  (goto-char (point-min))
-  (while (re-search-forward "^```" nil t)
-    (if (looking-back "^```")
-        (progn
-          (replace-match "#+begin_src")
-          (re-search-forward "^```" nil t)
-          (if (looking-back "^```")
-              (replace-match "#+end_src"))))))
-
-
 
 
 
@@ -422,18 +312,23 @@
 
 
 
-;; gtpel 设置默认ollama 模型
-(setq
- gptel-model "qwen2:7b"
- gptel-backend (gptel-make-ollama "Ollama"
-                 :host "localhost:11434"
-                 :stream t
-                 :models '("qwen2:7b")))
+;; gptel 设置默认ollama 模型
+(use-package gptel
+  :defer t
+  :config
+  (setq
+   gptel-model "qwen2:7b"
+   gptel-backend (gptel-make-ollama "Ollama"
+                   :host "localhost:11434"
+                   :stream t
+                   :models '("qwen2:7b")))
 
-(gptel-make-ollama "Ollama"             ;Any name of your choosing
-  :host "localhost:11434"               ;Where it's running
-  :stream t                             ;Stream responses
-  :models '("llama3:latest"))          ;List of models
+  (gptel-make-ollama "Ollama"             ;Any name of your choosing
+    :host "localhost:11434"               ;Where it's running
+    :stream t                             ;Stream responses
+    :models '("llama3:latest"))           ;List of models
+  )
+
 
 ;; evil settings
 
@@ -696,11 +591,12 @@
   ;; be used globally (M-/).  See also the customization variable
   ;; `global-corfu-modes' to exclude certain modes.
   :init
-  (global-corfu-mode))
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (setq-local corfu-auto nil)
-            (corfu-mode)))
+  (global-corfu-mode)
+  :config
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (setq-local corfu-auto nil)
+              (corfu-mode))))
 
 ;; A few more useful configurations...
 (use-package emacs
