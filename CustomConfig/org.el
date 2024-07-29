@@ -15,6 +15,7 @@
 ;; 可单独配置 #+STARTUP: show2levels
 ;;(setq org-startup-folded 'show2levels)
 
+;;(setq org-adapt-indentation t)
 
 ;;-------------------------------------------------------------------------------
 ;;
@@ -61,8 +62,24 @@
   (require 'org-roam-dailies) ;; Ensure the keymap is available
   (org-roam-db-autosync-mode)
   (require 'org-roam-protocol)
+
   )
 
+(defun my/org-roam-node-has-tag (node tag)
+  "Filter function to check if the given NODE has the specified TAG."
+  (member tag (org-roam-node-tags node)))
+
+(defun my/org-roam-node-find-by-tag ()
+  "Find and open an Org-roam node based on a specified tag."
+  (interactive)
+  (let ((tag (read-string "Enter tag: ")))
+    (org-roam-node-find nil nil (lambda (node) (my/org-roam-node-has-tag node tag)))))
+(defun org-roam-node-insert-immediate (arg &rest args)
+  (interactive "P")
+  (let ((args (push arg args))
+        (org-roam-capture-templates (list (append (car org-roam-capture-templates)
+                                                  '(:immediate-finish t)))))
+    (apply #'org-roam-node-insert args)))
 
 ;; (after! org-roam
 ;;   ;; org-roam网页摘录
@@ -75,12 +92,7 @@
 ;;                  :immediate-finish t
 ;;                  :unnarrowed t)))
 
-(defun org-roam-node-insert-immediate (arg &rest args)
-  (interactive "P")
-  (let ((args (push arg args))
-        (org-roam-capture-templates (list (append (car org-roam-capture-templates)
-                                                  '(:immediate-finish t)))))
-    (apply #'org-roam-node-insert args)))
+
 
 ;; (defun my/org-roam-filter-by-tag (tag-name)
 ;;   (lambda (node)
@@ -91,6 +103,8 @@
 ;;           (seq-filter
 ;;            (my/org-roam-filter-by-tag tag-name)
 ;;            (org-roam-node-list))))
+
+
 
 
 ;; (defun my/org-roam-capture-inbox ()
@@ -158,7 +172,7 @@
                              (browse-url
                               ;; we get the "zotero:"-less url, so we put it back.
                               (format "zotero:%s" zpath))))
-  (setq org-agenda-files '("~/Vandee/pkm/org/Journal.org" "~/Vandee/pkm/org/clip.org"))
+  (setq org-agenda-files '("~/Vandee/pkm/org/Journal.org" "~/Vandee/pkm/org/quotes.org"))
   ;; (setq org-agenda-include-diary t)
   ;; (setq org-agenda-diary-file "~/Vandee/pkm/org/Journal.org")
   (setq org-directory "~/Vandee/pkm/org/")
@@ -192,11 +206,11 @@
   (add-to-list 'org-capture-templates
                '("cw" "Web Collections" item
                  (file+headline "~/Vandee/pkm/org/websites.org" "实用")
-                 "Source: %^{Source}\nIntro: %^{Intro}%?\n"))
+                 "Intro: %^{Intro}\n\nSource: %^{Source}\n%?"))
   (add-to-list 'org-capture-templates
                '("ct" "Tool Collections" item
                  (file+headline "~/Vandee/pkm/org/tools.org" "实用")
-                 "Source: %^{Source}\nIntro: %^{Intro}%?\n"))
+                 "Intro: %^{Intro}\n\nSource: %^{Source}\n%?"))
   (add-to-list 'org-capture-templates
                '("cq" "Quote Collections" entry
                  (file+headline "~/Vandee/pkm/org/quotes.org" "Quotes")

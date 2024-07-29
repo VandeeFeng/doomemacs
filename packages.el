@@ -49,6 +49,7 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
 ;;(package! org :pin "806abc5a2bbcb5f884467a0145547221ba09eb59")
+;;https://git.savannah.gnu.org/cgit/emacs/org-mode.git/?h=release_9.7.8
 (package! org-roam)
 (package! org-roam-ui)
 (package! general)
@@ -75,3 +76,4 @@
 (package! jupyter)
 ;;(package! blacken)
 ;;(package! codeium :recipe (:host github :repo "Exafunction/codeium.el")) ;;代码补全
+(package! tabnine :disable t)

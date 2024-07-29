@@ -37,7 +37,7 @@
 ;; (add-hook 'org-mode-hook (lambda () (org-display-inline-images t)))
 
 ;; -- Display images in org mode
-;; enable image mode first
+;;enable image mode first
 ;; (iimage-mode)
 ;; ;; add the org file link format to the iimage mode regex
 ;; (add-to-list 'iimage-mode-image-regex-alist
@@ -61,15 +61,27 @@
 ;; (setq org-image-actual-width '(400)) 要在(org-toggle-inline-images)命令之前
 ;; 或者在文档开头加上 #+ATTR_ORG: :width 600 ，并设置(setq org-image-actual-width nil)
 
-(after! org
-  (setq org-startup-with-inline-images t)
-  (add-hook 'org-mode-hook (lambda ()
-                             (setq org-image-actual-width '(400))
-                             (org-toggle-inline-images)
-                             (when org-startup-with-inline-images
-                               (org-display-inline-images t)))))
+(setq org-startup-with-inline-images t)
+
+;; (add-hook 'org-mode-hook (lambda ()
+;;                            (setq org-image-actual-width '(400))
+;;                            (org-toggle-inline-images)
+;;                            (when org-startup-with-inline-images
+;;                              (org-display-inline-images t))))
 
 
+;;https://github.com/gaoDean/org-remoteimg
+
+;; optional: set this to wherever you want the cache to be stored
+(setq url-cache-directory "~/.config/emacs/.local/cache/url")
+
+(setq org-display-remote-inline-images 'cache) ;; enable caching
+
+;; or this if you don't want caching
+;; (setq org-display-remote-inline-images 'download)
+
+;; or this if you want to disable this plugin
+;; (setq org-display-remote-inline-images 'skip)
 
 
 
@@ -82,6 +94,8 @@
 (use-package pyim
   :init
   :config
+  (setq pyim-dicts
+        '((:name "dict1" :file "~/.config/doom/pyim-tsinghua-dict.pyim")))
   (pyim-default-scheme 'xiaohe-shuangpin)
   (setq default-input-method "pyim")
   ;; 设置 pyim 探针
@@ -106,6 +120,8 @@
             (lambda ()
               (toggle-input-method)
               (setq default-input-method "pyim")))
+  (add-hook 'emacs-startup-hook
+            (lambda () (pyim-restart-1 t)))
   )
 
 (use-package pyim-basedict
@@ -565,23 +581,21 @@
 ;;   (setq lsp-bridge-enable-log nil))
 
 
-
 ;;corfu
 ;;
-
 (use-package corfu
   ;; Optional customizations
-  ;; :custom
-  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  ;; (corfu-auto t)                 ;; Enable auto completion
+  :custom
+  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  (corfu-auto t)                 ;; Enable auto completion
   ;; (corfu-separator ?\s)          ;; Orderless field separator
   ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
   ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
   ;; (corfu-preview-current nil)    ;; Disable current candidate preview
-  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  (corfu-preselect 'prompt)      ;; Preselect the prompt
   ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
-  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
-
+  ;;(corfu-scroll-margin 8)        ;; Use scroll margin
+  ;;:bind
   ;; Enable Corfu only for certain modes.
   ;; :hook ((prog-mode . corfu-mode)
   ;;        (shell-mode . corfu-mode)
@@ -592,13 +606,19 @@
   ;; `global-corfu-modes' to exclude certain modes.
   :init
   (global-corfu-mode)
+  :custom
+  (orderless-define-completion-style orderless-fast
+    (orderless-style-dispatchers '(orderless-fast-dispatch))
+    (orderless-matching-styles '(orderless-literal orderless-regexp)))
+
   :config
   (add-hook 'eshell-mode-hook
             (lambda ()
               (setq-local corfu-auto nil)
-              (corfu-mode))))
+              (corfu-mode)))
+  )
 
-;; A few more useful configurations...
+;;A few more useful configurations...
 (use-package emacs
   :custom
   ;; TAB cycle if there are only few candidates
@@ -617,5 +637,72 @@
   ;; setting is useful beyond Corfu.
   (read-extended-command-predicate #'command-completion-default-include-p))
 
+(use-package orderless
+  :demand t
+  :config
+  (setq completion-styles '(orderless partial-completion)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles . (partial-completion)))))
+
+  (defun orderless-fast-dispatch (word index total)
+    (and (= index 0) (= total 1) (length< word 4)
+         (cons 'orderless-literal-prefix word)))
+
+  (orderless-define-completion-style orderless-fast
+    (orderless-style-dispatchers '(orderless-fast-dispatch))
+    (orderless-matching-styles '(orderless-literal orderless-regexp)))
+
+  (setq-local corfu-auto        t
+              corfu-auto-delay  0 ;; TOO SMALL - NOT RECOMMENDED
+              corfu-auto-prefix 1 ;; TOO SMALL - NOT RECOMMENDED
+              completion-styles '(orderless-fast basic))
+
+  )
 
 
+;; ;; sis
+;; ;;
+;; (use-package sis
+;;   ;; :hook
+;;   ;; enable the /context/ and /inline region/ mode for specific buffers
+;;   ;; (((text-mode prog-mode) . sis-context-mode)
+;;   ;;  ((text-mode prog-mode) . sis-inline-mode))
+
+;;   :config
+;;   ;; For MacOS
+;;   (sis-ism-lazyman-config
+
+;;    ;; English input source may be: "ABC", "US" or another one.
+;;    ;; "com.apple.keylayout.ABC"
+;;    "com.apple.keylayout.ABC"
+
+;;    ;; Other language input source: "rime", "sogou" or another one.
+;;    ;; "im.rime.inputmethod.Squirrel.Rime"
+;;    "im.rime.inputmethod.Squirrel.Hans")
+
+;;   ;; enable the /cursor color/ mode
+;;   (sis-global-cursor-color-mode t)
+;;   ;; enable the /respect/ mode
+;;   (sis-global-respect-mode t)
+;;   ;; enable the /context/ mode for all buffers
+;;   (sis-global-context-mode t)
+;;   ;; enable the /inline english/ mode for all buffers
+;;   (sis-global-inline-mode t)
+;;   )
+
+
+;; (use-package! tabnine
+;;   :hook ((prog-mode . tabnine-mode)
+;; 	 (kill-emacs . tabnine-kill-process))
+;;   :config
+;;   (add-to-list 'completion-at-point-functions #'tabnine-completion-at-point)
+;;   (tabnine-start-process)
+;;   :bind
+;;   (:map  tabnine-completion-map
+;; 	 ("<tab>" . tabnine-accept-completion)
+;; 	 ("TAB" . tabnine-accept-completion)
+;; 	 ("M-f" . tabnine-accept-completion-by-word)
+;; 	 ("M-<return>" . tabnine-accept-completion-by-line)
+;; 	 ("C-g" . tabnine-clear-overlay)
+;; 	 ("M-[" . tabnine-previous-completion)
+;; 	 ("M-]" . tabnine-next-completion)))

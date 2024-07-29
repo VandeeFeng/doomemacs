@@ -8,6 +8,7 @@
 (load! "CustomConfig/misc")
 (load! "CustomConfig/org")
 (load! "CustomConfig/languages")
+;;(load! "org-remoteimg.el") 容易引起一个报错，而且还没解决图片显示大小问题
 ;;(load! "CustomConfig/chinese")
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email

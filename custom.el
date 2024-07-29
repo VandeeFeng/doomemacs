@@ -3,6 +3,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(codeium/metadata/api_key "4b9e3999-558f-4e2c-8aa5-6d8d420ae740")
  '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
  '(warning-suppress-types '((initialization) (defvaralias) (lexical-binding))))
 (custom-set-faces
