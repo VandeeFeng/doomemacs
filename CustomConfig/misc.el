@@ -63,25 +63,33 @@
 
 (setq org-startup-with-inline-images t)
 
-;; (add-hook 'org-mode-hook (lambda ()
-;;                            (setq org-image-actual-width '(400))
-;;                            (org-toggle-inline-images)
-;;                            (when org-startup-with-inline-images
-;;                              (org-display-inline-images t))))
+(add-hook 'org-mode-hook (lambda ()
+                           (setq org-image-actual-width '(400))
+                           (org-toggle-inline-images)
+                           (when org-startup-with-inline-images
+                             (org-display-inline-images t))))
 
 
 ;;https://github.com/gaoDean/org-remoteimg
 
-;; optional: set this to wherever you want the cache to be stored
-(setq url-cache-directory "~/.config/emacs/.local/cache/url")
+(use-package org-remoteimg
+  :load-path "~/.config/doom/org-remoteimg"
+  :config
+  ;; optional: set this to wherever you want the cache to be stored
+  (setq url-cache-directory "~/.config/emacs/.local/cache/url")
 
-(setq org-display-remote-inline-images 'cache) ;; enable caching
+  (setq org-display-remote-inline-images 'cache) ;; enable caching
 
-;; or this if you don't want caching
-;; (setq org-display-remote-inline-images 'download)
+  ;; or this if you don't want caching
+  ;; (setq org-display-remote-inline-images 'download)
 
-;; or this if you want to disable this plugin
-;; (setq org-display-remote-inline-images 'skip)
+  ;; or this if you want to disable this plugin
+  ;; (setq org-display-remote-inline-images 'skip)
+
+  )
+
+
+
 
 
 
@@ -94,8 +102,6 @@
 (use-package pyim
   :init
   :config
-  (setq pyim-dicts
-        '((:name "dict1" :file "~/.config/doom/pyim-tsinghua-dict.pyim")))
   (pyim-default-scheme 'xiaohe-shuangpin)
   (setq default-input-method "pyim")
   ;; 设置 pyim 探针
@@ -129,7 +135,11 @@
   (pyim-basedict-enable))
 
 
-
+(use-package pyim-tsinghua-dict
+  :load-path "~/.config/emacs/pyim-tsinghua-dict"
+  :config
+  (pyim-tsinghua-dict-enable)
+  )
 
 ;;-------------------------------------------------------------------------------------------
 ;; 键位绑定，解绑，转换
