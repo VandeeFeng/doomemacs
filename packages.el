@@ -59,7 +59,7 @@
 (package! gptel)
 (package! evil-tutor)
 (package! grab-mac-link)
-(package! pangu-spacing)
+(package! pangu-spacing :disable t)
 ;;(package! org-mac-link :disable t)
 ;;(package! rime)
 ;;(package! sis)
@@ -77,3 +77,5 @@
 ;;(package! blacken)
 ;;(package! codeium :recipe (:host github :repo "Exafunction/codeium.el")) ;;代码补全
 (package! tabnine :disable t)
+;; (package! marginalia)
+;; (package! embark)

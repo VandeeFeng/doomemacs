@@ -7,16 +7,60 @@
 ;;
 ;;
 
-
 ;;----------------------------------------------------------------------------
 ;;自定义函数
 ;;----------------------------------------------------------------------------
 ;;
+;; https://stackoverflow.com/questions/3669511/the-function-to-show-current-files-full-path-in-mini-buffer#3669681
+(defun my-buffer-path ()
+  "copy buffer's full path to kill ring"
+  (interactive)
+  (let ((file-path (buffer-file-name)))
+    (when file-path
+      (kill-new (file-name-directory file-path))
+      (message "Copied parent directory path: %s" (file-name-directory file-path)))))
+
+
+
+;; (defun my-copy-buffer-file-name (event &optional bufName)
+;;   "Copy buffer file name to kill ring.
+;; If no file is associated with buffer just get buffer name.
+;; "
+;;   (interactive "eP")
+;;   (save-selected-window
+;;     (message "bufName: %S" bufName)
+;;     (select-window (posn-window (event-start event)))
+;;     (let ((name (or (unless bufName (buffer-file-name)) (buffer-name))))
+;;       (message "Saved file name \"%s\" in killring." name)
+;;       (kill-new name)
+;;       name)))
+;; (define-key mode-line-buffer-identification-keymap [mode-line mouse-2] 'copy-buffer-file-name)
+;; (define-key mode-line-buffer-identification-keymap [mode-line S-mouse-2] '(lambda (e) (interactive "e") (copy-buffer-file-name e 't)))
+;;
+;;在minibuffer里使用shell指令
+;;https://stackoverflow.com/questions/10121944/passing-emacs-variables-to-minibuffer-shell-commands
+(defun my-shell-command (command &optional output-buffer error-buffer)
+  "Run a shell command with the current file (or marked dired files).
+In the shell command, the file(s) will be substituted wherever a '%' is."
+  (interactive (list (read-from-minibuffer "Shell command: "
+                                           nil nil nil 'shell-command-history)
+                     current-prefix-arg
+                     shell-command-default-error-buffer))
+  (cond ((buffer-file-name)
+         (setq command (replace-regexp-in-string "%" (buffer-file-name) command nil t)))
+        ((and (equal major-mode 'dired-mode) (save-excursion (dired-move-to-filename)))
+         (setq command (replace-regexp-in-string "%" (mapconcat 'identity (dired-get-marked-files) " ") command nil t))))
+  (shell-command command output-buffer error-buffer))
+
+;;
+;;
+;;
+;;
 ;; 显示当前 heading 内容并折叠其他
 ;; https://emacs-china.org/t/org-mode/23205
-(defun my/org-show-current-heading-tidily ()
-  (interactive)
+(defun my-org-show-current-heading-tidily ()
   "Show next entry, keeping other entries closed."
+  (interactive)
   (if (save-excursion (end-of-line) (outline-invisible-p))
       (progn (org-show-entry) (show-children))
     (save-excursion
@@ -37,10 +81,16 @@
   (interactive)
   (insert (format-time-string "<%Y-%m-%d %a %H:%M>")))
 
+(defun my-tags-view ()
+  "Show all headlines for org files matching a TAGS criterion."
+  (interactive)
+  (let* ((org-agenda-files '("~/Vandee/pkm"))
+         (org-tags-match-list-sublevels nil))
+    (call-interactively 'org-tags-view)))
 
 
 ;; 自定义搜索
-(defun my--build-or-regexp-by-keywords (keywords)
+(defun my-build-or-regexp-by-keywords (keywords)
   "构建or语法的正则"
   (let (wordlist tmp regexp)
     (setq wordlist (split-string keywords " "))
@@ -51,7 +101,7 @@
     regexp
     ))
 
-(defun my--build-and-regexp-by-keywords (keywords)
+(defun my-build-and-regexp-by-keywords (keywords)
   "构建and语法的正则"
   (let (reg wlist fullreg reglist)
     (setq wlist (split-string keywords " "))
@@ -80,7 +130,7 @@
     fullreg
     ))
 
-(defun my/search-or-by-rg ()
+(defun my-search-or-by-rg ()
   "以空格分割关键词，以or条件搜索多个关键词的内容
   如果要搜索tag，可以输入`:tag1 :tag2 :tag3'
   "
@@ -92,7 +142,7 @@
     ))
 
 
-(defun my/search-and-by-rg ()
+(defun my-search-and-by-rg ()
   "以空格分割关键词，以and条件搜索同时包含多个关键词的内容
   如果要搜索tag，可以输入`:tag1 :tag2 :tag3'
   "
@@ -203,7 +253,10 @@
     "v T" '(my-tags-view :wk "my-tags-view")
     "v d" '(my-insert-timestamp :wk "insert-timestamp")
     ;;"v r" '(my-remove-extra-spaces :wk "my-remove-extra-spaces")
-    "v h" '(my/org-show-current-heading-tidily :wk "折叠其他标题")
+    "v h" '(my-org-show-current-heading-tidily :wk "折叠其他标题")
+    "v p" '(my-buffer-path :wk "pwd")
+    "v s" '(my-shell-command :wk "my-minibuffer-shell")
+
     ;; "v o n" '(org-roam-capture :wk "org-roam-capture")
     ;; "v o d" '(org-roam-dailies-capture-today :wk "org-roam-dailies-capture-today")
 

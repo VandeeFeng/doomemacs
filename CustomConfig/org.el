@@ -47,10 +47,10 @@
          ("C-c n i" . org-roam-node-insert)
          ("C-c n I" . org-roam-node-insert-immediate)
          ("C-c n c" . org-roam-capture)
-         ("C-c n j" . org-roam-dailies-capture-today)
-         ("C-c n n" . my/org-roam-find-notes)
-         ("C-c n t" . my/org-roam-capture-task)
-         ("C-c n b" . my/org-roam-capture-inbox)
+         ;;("C-c n j" . org-roam-dailies-capture-today)
+         ;;("C-c n n" . my/org-roam-find-notes)
+         ;;("C-c n t" . my/org-roam-capture-task)
+         ;;("C-c n b" . my/org-roam-capture-inbox)
          :map org-mode-map
          ("C-M-i" . completion-at-point)
          :map org-roam-dailies-map
@@ -99,6 +99,7 @@
 ;;     (member tag-name (org-roam-node-tags node))))
 
 ;; (defun my/org-roam-list-notes-by-tag (tag-name)
+;;   (interactive)
 ;;   (mapcar #'org-roam-node-file
 ;;           (seq-filter
 ;;            (my/org-roam-filter-by-tag tag-name)
@@ -224,14 +225,14 @@
 
 
   (setq org-tag-alist '((:startgroup . nil)
-                        ("@code" . c)
+                        ("Coding" . c)
                         (:grouptags . nil)
-                        ("@Python" . p)
-                        ("@JavaScript" . j)
+                        ("Python" . p)
+                        ("JavaScript" . j)
                         (:endgroup . nil)
                         ("LLM" . ?l) ("RAG" . ?r)
                         (:startgroup . nil)
-                        ("@vandee" . v)
+                        ("Vandee" . v)
                         (:endgroup . nil)
                         ("Thoughts" . ?t) ("Quote" . ?q)))
 
@@ -243,12 +244,6 @@
 
 
 
-(defun my-tags-view ()
-  "Show all headlines for org files matching a TAGS criterion."
-  (interactive)
-  (let* ((org-agenda-files '("~/Vandee/pkm"))
-         (org-tags-match-list-sublevels nil))
-    (call-interactively 'org-tags-view)))
 
 
 ;;https://emacs-china.org/t/org-mode-gtd-faq/196/16
@@ -324,11 +319,11 @@
 ;; (setq org-protocol-protocol 'org-roam)
 ;; 盘古
 ;;https://github.com/coldnew/pangu-spacing
-(use-package pangu-spacing
-  :config
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (set (make-local-variable 'pangu-spacing-real-insert-separtor) t))))
+;; (use-package pangu-spacing
+;;   :config
+;;   (add-hook 'org-mode-hook
+;;             (lambda ()
+;;               (set (make-local-variable 'pangu-spacing-real-insert-separtor) t))))
 
 
 ;; https://emacs-china.org/t/org-mode/22313
@@ -365,3 +360,47 @@
 ;; (org-element-update-syntax)
 ;;
 ;;
+
+;; https://emacs-china.org/t/emacs/27274
+;; https://remacs.fun/posts/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%97%B6%E4%BB%A3%E6%88%91%E4%BB%AC%E6%80%8E%E4%B9%88%E7%8E%A9emacs1.-%E4%B8%AD%E8%8B%B1%E6%96%87%E8%BE%93%E5%85%A5%E6%97%B6%E7%9A%84%E7%A9%BA%E6%A0%BC/
+(defun add-space-between-chinese-and-english ()
+  "在中英文之间自动添加空格。"
+  (let ((current-char (char-before))
+        (prev-char (char-before (1- (point)))))
+    (when (and current-char prev-char
+               (or (and (is-chinese-character prev-char) (is-halfwidth-character current-char))
+                   (and (is-halfwidth-character prev-char) (is-chinese-character current-char)))
+               (not (eq prev-char ?\s))) ; 检查前一个字符不是空格
+      (save-excursion
+        (goto-char (1- (point)))
+        (insert " ")))))
+
+(defun is-chinese-character (char)
+  "判断字符是否为中文字符。"
+  (and char (or (and (>= char #x4e00) (<= char #x9fff))
+                (and (>= char #x3400) (<= char #x4dbf))
+                (and (>= char #x20000) (<= char #x2a6df))
+                (and (>= char #x2a700) (<= char #x2b73f))
+                (and (>= char #x2b740) (<= char #x2b81f))
+                (and (>= char #x2b820) (<= char #x2ceaf)))))
+
+(defun is-halfwidth-character (char)
+  "判断字符是否为半角字符，包括英文字母、数字和标点符号。"
+  (and char (or (and (>= char ?a) (<= char ?z))
+                (and (>= char ?A) (<= char ?Z))
+                (and (>= char ?0) (<= char ?9))
+                )))
+
+(defun delayed-add-space-between-chinese-and-english ()
+  "延迟执行，在中英文之间自动添加空格。"
+  (run-with-idle-timer 0 nil 'add-space-between-chinese-and-english))
+
+(define-minor-mode auto-space-mode
+  "在中英文之间自动添加空格的模式。"
+  :lighter " Auto-Space"
+  :global t
+  (if auto-space-mode
+      (add-hook 'post-self-insert-hook 'add-space-between-chinese-and-english)
+    (remove-hook 'post-self-insert-hook 'add-space-between-chinese-and-english)))
+
+(auto-space-mode t)

@@ -10,6 +10,8 @@
 ;;-------------------------------------------------------------------------------------------
 ;;
 ;;
+;;
+;;
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)
@@ -144,7 +146,7 @@
 ;;-------------------------------------------------------------------------------------------
 ;; 键位绑定，解绑，转换
 ;; 修改默认键位映射，取消command键位
-(setq mac-option-modifier 'meta)
+;;(setq mac-option-modifier 'meta)
 
 ;;(setq mac-command-modifier 'none)
 ;;(global-set-key (kbd "M-z") nil)
@@ -616,16 +618,22 @@
   ;; `global-corfu-modes' to exclude certain modes.
   :init
   (global-corfu-mode)
-  :custom
-  (orderless-define-completion-style orderless-fast
-    (orderless-style-dispatchers '(orderless-fast-dispatch))
-    (orderless-matching-styles '(orderless-literal orderless-regexp)))
+  ;; :custom
+  ;; (orderless-define-completion-style orderless-fast
+  ;;   (orderless-style-dispatchers '(orderless-fast-dispatch))
+  ;;   (orderless-matching-styles '(orderless-literal orderless-regexp)))
 
   :config
   (add-hook 'eshell-mode-hook
             (lambda ()
               (setq-local corfu-auto nil)
               (corfu-mode)))
+
+  (setq global-corfu-minibuffer
+        (lambda ()
+          (not (or (bound-and-true-p mct--active)
+                   (bound-and-true-p vertico--input)
+                   (eq (current-local-map) read-passwd-map)))))
   )
 
 ;;A few more useful configurations...
@@ -637,7 +645,8 @@
   ;; Enable indentation+completion using the TAB key.
   ;; `completion-at-point' is often bound to M-TAB.
   (tab-always-indent 'complete)
-
+  ;; Support opening new minibuffers from inside existing minibuffers.
+  ;;(enable-recursive-minibuffers t)
   ;; Emacs 30 and newer: Disable Ispell completion function. As an alternative,
   ;; try `cape-dict'.
   ;;(text-mode-ispell-word-completion nil)
@@ -645,7 +654,12 @@
   ;; Emacs 28 and newer: Hide commands in M-x which do not apply to the current
   ;; mode.  Corfu commands are hidden, since they are not used via M-x. This
   ;; setting is useful beyond Corfu.
-  (read-extended-command-predicate #'command-completion-default-include-p))
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  ;; Do not allow the cursor in the minibuffer prompt
+  ;; (setq minibuffer-prompt-properties
+  ;;       '(read-only t cursor-intangible t face minibuffer-prompt))
+  ;; (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
+  )
 
 (use-package orderless
   :demand t
@@ -716,3 +730,47 @@
 ;; 	 ("C-g" . tabnine-clear-overlay)
 ;; 	 ("M-[" . tabnine-previous-completion)
 ;; 	 ("M-]" . tabnine-next-completion)))
+
+
+;; https://emacs-china.org/t/mini-buffer-buffer/24542/5
+;;
+;; (use-package marginalia
+;;   :ensure t
+;;   :config
+;;   (marginalia-mode))
+
+;; (use-package embark
+;;   :ensure t
+
+;;   :bind
+;;   (("C-." . embark-act)         ;; pick some comfortable binding
+;;    ("C-;" . embark-dwim)        ;; good alternative: M-.
+;;    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
+;;   :init
+
+;;   ;; Optionally replace the key help with a completing-read interface
+;;   (setq prefix-help-command #'embark-prefix-help-command)
+
+;;   ;; Show the Embark target at point via Eldoc. You may adjust the
+;;   ;; Eldoc strategy, if you want to see the documentation from
+;;   ;; multiple providers. Beware that using this can be a little
+;;   ;; jarring since the message shown in the minibuffer can be more
+;;   ;; than one line, causing the modeline to move up and down:
+
+;;   ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+;;   ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
+;;   :config
+
+;;   ;; Hide the mode line of the Embark live/completions buffers
+;;   (add-to-list 'display-buffer-alist
+;;                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+;;                  nil
+;;                  (window-parameters (mode-line-format . none)))))
+
+;; ;; Consult users will also want the embark-consult package.
+;; (use-package embark-consult
+;;   :ensure t ; only need to install it, embark loads it after consult if found
+;;   :hook
+;;   (embark-collect-mode . consult-preview-at-point-mode))
