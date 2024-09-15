@@ -123,13 +123,14 @@
   (setq-default pyim-punctuation-half-width-functions
                 '(pyim-probe-punctuation-line-beginning
                   pyim-probe-punctuation-after-punctuation))
-
+  ;; (setq pyim-dicts
+  ;;       '((:name "pyim-tsinghua-dict" :file "~/.config/emacs/pyim-tsinghua-dict.pyim")))
   (add-hook 'org-mode-hook
             (lambda ()
               (toggle-input-method)
               (setq default-input-method "pyim")))
-  (add-hook 'emacs-startup-hook
-            (lambda () (pyim-restart-1 t)))
+  ;; (add-hook 'emacs-startup-hook
+  ;;           (lambda () (pyim-restart-1 t)))
   )
 
 (use-package pyim-basedict
@@ -139,6 +140,7 @@
 
 (use-package pyim-tsinghua-dict
   :load-path "~/.config/emacs/pyim-tsinghua-dict"
+
   :config
   (pyim-tsinghua-dict-enable)
   )
@@ -338,8 +340,6 @@
 
 
 
-
-
 ;; gptel 设置默认ollama 模型
 (use-package gptel
   :defer t
@@ -495,7 +495,7 @@
         (lsp-ui-doc-mode 1)
         (lsp-ui-doc-show))
       ))
-  )
+
 
 
 
@@ -663,6 +663,10 @@
 
 (use-package orderless
   :demand t
+  :custom
+  (orderless-define-completion-style orderless-fast
+    (orderless-style-dispatchers '(orderless-fast-dispatch))
+    (orderless-matching-styles '(orderless-literal orderless-regexp)))
   :config
   (setq completion-styles '(orderless partial-completion)
         completion-category-defaults nil
@@ -671,10 +675,6 @@
   (defun orderless-fast-dispatch (word index total)
     (and (= index 0) (= total 1) (length< word 4)
          (cons 'orderless-literal-prefix word)))
-
-  (orderless-define-completion-style orderless-fast
-    (orderless-style-dispatchers '(orderless-fast-dispatch))
-    (orderless-matching-styles '(orderless-literal orderless-regexp)))
 
   (setq-local corfu-auto        t
               corfu-auto-delay  0 ;; TOO SMALL - NOT RECOMMENDED

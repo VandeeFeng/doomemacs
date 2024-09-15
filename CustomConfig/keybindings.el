@@ -11,6 +11,15 @@
 ;;自定义函数
 ;;----------------------------------------------------------------------------
 ;;
+
+(defun move-to-end-of-line ()
+  "Move the cursor to the end of the current line."
+  (interactive)
+  (end-of-line))
+
+;; 在 normal 模式下将 9 键绑定到这个函数
+(map! :n "9" #'move-to-end-of-line)
+
 ;; https://stackoverflow.com/questions/3669511/the-function-to-show-current-files-full-path-in-mini-buffer#3669681
 (defun my-buffer-path ()
   "copy buffer's full path to kill ring"
@@ -283,7 +292,7 @@ In the shell command, the file(s) will be substituted wherever a '%' is."
     "b d" '(bookmark-delete :wk "Delete bookmark")
     "b i" '(ibuffer :wk "Ibuffer")
     "b k" '(kill-current-buffer :wk "Kill current buffer")
-    "b K" '(kill-some-buffers :wk "Kill multiple buffers")
+    "b D" '(kill-some-buffers :wk "Kill multiple buffers")
     "b l" '(list-bookmarks :wk "List bookmarks")
     "b m" '(bookmark-set :wk "Set bookmark")
     "b n" '(next-buffer :wk "Next buffer")

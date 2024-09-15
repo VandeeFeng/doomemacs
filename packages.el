@@ -53,7 +53,7 @@
 (package! org-roam)
 (package! org-roam-ui)
 (package! general)
-(package! ivy-rich)
+;;(package! ivy-rich)
 (package! counsel)
 (package! python-black)
 (package! gptel)
