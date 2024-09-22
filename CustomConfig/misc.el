@@ -11,6 +11,9 @@
 ;;
 ;;
 ;;
+;;取消退出确认
+(setq confirm-kill-emacs nil)
+
 ;;
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -495,6 +498,7 @@
         (lsp-ui-doc-mode 1)
         (lsp-ui-doc-show))
       ))
+  )
 
 
 

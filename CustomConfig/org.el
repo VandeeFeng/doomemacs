@@ -167,13 +167,18 @@
   ;; (server-start)
   ;; (require 'org-protocol)
   :config
+  (org-link-set-parameters "calibre" :follow
+                           (lambda (cpath)
+                             (browse-url
+                              ;; 我们直接使用 cpath，因为它已经是完整的 Calibre 链接
+                              (format "calibre:%s" cpath))))
   (setq org-export-with-toc nil) ;;禁止生成toc
   (org-link-set-parameters "zotero" :follow
                            (lambda (zpath)
                              (browse-url
                               ;; we get the "zotero:"-less url, so we put it back.
                               (format "zotero:%s" zpath))))
-  (setq org-agenda-files '("~/Vandee/pkm/org/Journal.org" "~/Vandee/pkm/org/quotes.org"))
+  (setq org-agenda-files '("~/Vandee/pkm/org/Journal.org" "~/Vandee/pkm/org/clips.org"))
   ;; (setq org-agenda-include-diary t)
   ;; (setq org-agenda-diary-file "~/Vandee/pkm/org/Journal.org")
   (setq org-directory "~/Vandee/pkm/org/")
@@ -187,6 +192,10 @@
   (add-to-list 'org-capture-templates
                '("j" "Journal" entry (file+datetree "~/Vandee/pkm/org/Journal.org")
                  "* TODOs\n* Inbox\n- %?"))
+  (add-hook 'org-capture-after-finalize-hook
+            (lambda ()
+              (when (string= (org-capture-get :key) "j")
+                (find-file "~/Vandee/pkm/org/Journal.org"))))
   (add-to-list 'org-capture-templates
                '("i" "Inbox" entry (file+datetree "~/Vandee/pkm/org/Inbox.org")
                  "* %U - %^{heading} %^g\n %?\n"))
@@ -213,11 +222,11 @@
                  (file+headline "~/Vandee/pkm/org/tools.org" "实用")
                  "Intro: %^{Intro}\n\nSource: %^{Source}\n%?"))
   (add-to-list 'org-capture-templates
-               '("cq" "Quote Collections" entry
-                 (file+headline "~/Vandee/pkm/org/quotes.org" "Quotes")
-                 "* %^{heading} %^g\n%T\nSource: %^{source}\n%?"))
+               '("cc" "Clip Collections" entry
+                 (file+headline "~/Vandee/pkm/org/clips.org" "Clips")
+                 "* %^{heading} %^g\n%T\n\nSource: %^{source}\n\n%?"))
   (add-to-list 'org-capture-templates
-               '("cc" "Code Collections" entry
+               '("cC" "Code Collections" entry
                  (file+headline "~/Vandee/pkm/org/codes.org" "Codes")
                  "* %U - %^{Intro} %^G\nSource: %^{source}\n%?"))
 
@@ -404,3 +413,21 @@
     (remove-hook 'post-self-insert-hook 'add-space-between-chinese-and-english)))
 
 (auto-space-mode t)
+
+
+
+(defun add-space-after-org-link ()
+  "在插入 Org-mode 链接后自动添加一个英文空格。"
+  (when (looking-back "\$$\\[.*?\$$\$$.*?\$$\\s-*\\'" nil)
+    (insert " ")))
+
+(defun enable-org-link-space-mode ()
+  "启用在 Org-mode 链接后自动添加空格的模式。"
+  (add-hook 'post-self-insert-hook 'add-space-after-org-link))
+
+(defun disable-org-link-space-mode ()
+  "禁用在 Org-mode 链接后自动添加空格的模式。"
+  (remove-hook 'post-self-insert-hook 'add-space-after-org-link))
+
+;; 在 Org-mode 中启用该功能
+(add-hook 'org-mode-hook 'enable-org-link-space-mode)
