@@ -178,7 +178,7 @@
                              (browse-url
                               ;; we get the "zotero:"-less url, so we put it back.
                               (format "zotero:%s" zpath))))
-  (setq org-agenda-files '("~/Vandee/pkm/org/Journal.org" "~/Vandee/pkm/org/clips.org"))
+  (setq org-agenda-files '("~/Vandee/pkm/org/Journal.org" "~/Vandee/pkm/org/clips.org" "~/Vandee/pkm/org/projects.org"))
   ;; (setq org-agenda-include-diary t)
   ;; (setq org-agenda-diary-file "~/Vandee/pkm/org/Journal.org")
   (setq org-directory "~/Vandee/pkm/org/")
@@ -204,14 +204,20 @@
     "Move point to the last headline in file matching \"* Notes\"."
     (end-of-buffer)
     (re-search-backward "\\* TODOs"))
+  ;; task
+  (add-to-list 'org-capture-templates '("t" "Tasks"))
   (add-to-list 'org-capture-templates
-               '("t" "Task" entry (file+function "~/Vandee/pkm/org/Journal.org"
-                                                 my-org-goto-last-todo-headline)
+               '("tt" "Task" entry (file+function "~/Vandee/pkm/org/Journal.org"
+                                                  my-org-goto-last-todo-headline)
                  "* TODO %i%? \n%T"))
   ;; (add-to-list 'org-capture-templates
   ;;              '("t" "Task" entry (file+datetree "~/Vandee/pkm/Task.org")
   ;;                "* TODO %^{任务名}\n%T\n%a\n"))
+  (add-to-list 'org-capture-templates
+               '("tp" "Project" entry (file+headline "~/Vandee/pkm/org/Projects.org" "Projects")
+                 "* TODO %^{任务名}\n%T"))
 
+  ;; colections
   (add-to-list 'org-capture-templates '("c" "Collections"))
   (add-to-list 'org-capture-templates
                '("cw" "Web Collections" item
@@ -416,18 +422,25 @@
 
 
 
-(defun add-space-after-org-link ()
-  "在插入 Org-mode 链接后自动添加一个英文空格。"
-  (when (looking-back "\$$\\[.*?\$$\$$.*?\$$\\s-*\\'" nil)
-    (insert " ")))
 
-(defun enable-org-link-space-mode ()
-  "启用在 Org-mode 链接后自动添加空格的模式。"
-  (add-hook 'post-self-insert-hook 'add-space-after-org-link))
+(defun add-space-after-org-link-pasted ()
+  "在粘贴 Org-mode 链接后自动添加一个英文空格。"
+  (let ((beg (region-beginning))
+        (end (region-end)))
+    (when (save-excursion
+            (goto-char beg)
+            (and (re-search-forward "\\[\\[.*?\\]\\[.*?\\]\\]" end t)
+                 (= (point) end))) ; 检查是否粘贴了链接
+      (goto-char end)
+      (insert " "))))
 
-(defun disable-org-link-space-mode ()
-  "禁用在 Org-mode 链接后自动添加空格的模式。"
-  (remove-hook 'post-self-insert-hook 'add-space-after-org-link))
+(define-minor-mode org-link-space-mode
+  "在 Org-mode 链接后自动添加空格的模式。"
+  :init-value nil
+  :lighter " OrgLinkSpace"
+  (if org-link-space-mode
+      (add-hook 'yank-end-hook 'add-space-after-org-link-pasted)
+    (remove-hook 'yank-end-hook 'add-space-after-org-link-pasted)))
 
 ;; 在 Org-mode 中启用该功能
-(add-hook 'org-mode-hook 'enable-org-link-space-mode)
+(add-hook 'org-mode-hook 'org-link-space-mode)

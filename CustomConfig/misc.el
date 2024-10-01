@@ -348,11 +348,11 @@
   :defer t
   :config
   (setq
-   gptel-model "qwen2:7b"
+   gptel-model "qwen2.5"
    gptel-backend (gptel-make-ollama "Ollama"
                    :host "localhost:11434"
                    :stream t
-                   :models '("qwen2:7b")))
+                   :models '("qwen2.5")))
 
   (gptel-make-ollama "Ollama"             ;Any name of your choosing
     :host "localhost:11434"               ;Where it's running
