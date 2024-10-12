@@ -10,6 +10,12 @@
 ;;-------------------------------------------------------------------------------------------
 ;;
 ;;
+;; onedark theme
+
+;; (add-to-list 'custom-theme-load-path "~/.config/doom/atom-one-dark-theme/")
+;; (load-theme 'atom-one-dark t)
+;; (setq doom-theme 'atom-one-dark)
+
 ;;
 ;;取消退出确认
 (setq confirm-kill-emacs nil)
@@ -102,7 +108,7 @@
 
 ;;-------------------------------------------------------------------------------------------
 ;;输入法 https://github.com/tumashu/pyim
-;;(setq default-input-method "system")
+(setq default-input-method "system")
 (global-set-key (kbd "C-\\") 'toggle-input-method)
 (use-package pyim
   :init
@@ -142,11 +148,48 @@
 
 
 (use-package pyim-tsinghua-dict
-  :load-path "~/.config/emacs/pyim-tsinghua-dict"
+  :load-path "~/.config/doom/pyim-tsinghua-dict"
 
   :config
   (pyim-tsinghua-dict-enable)
   )
+
+
+
+
+
+;; sis
+;; https://github.com/laishulu/emacs-smart-input-source
+;; (use-package sis
+;;   :hook
+;;   ;; enable the /context/ and /inline region/ mode for specific buffers
+;;   (((text-mode prog-mode) . sis-context-mode)
+;;    ((text-mode prog-mode) . sis-inline-mode))
+;;   ;; :after evil
+;;   :config
+;;   ;; For MacOS
+;;   (sis-ism-lazyman-config
+;;    ;; English input source may be: "ABC", "US" or another one.
+;;    ;; "com.apple.keylayout.ABC"
+;;    "com.apple.keylayout.ABC"
+
+;;    ;; Other language input source: "rime", "sogou" or another one.
+;;    ;; "im.rime.inputmethod.Squirrel.Rime"
+;;    "im.rime.inputmethod.Squirrel.Hans")
+
+;;   ;; enable the /cursor color/ mode
+;;   ;;(sis-global-cursor-color-mode t)
+;;   ;; enable the /respect/ mode
+;;   (sis-global-respect-mode t)
+;;   ;; enable the /context/ mode for all buffers
+;;   ;; (sis-global-context-mode t)
+;;   ;; enable the /inline english/ mode for all buffers
+;;   ;; (sis-global-inline-mode t)
+;;   )
+
+
+
+
 
 ;;-------------------------------------------------------------------------------------------
 ;; 键位绑定，解绑，转换
@@ -357,7 +400,7 @@
   (gptel-make-ollama "Ollama"             ;Any name of your choosing
     :host "localhost:11434"               ;Where it's running
     :stream t                             ;Stream responses
-    :models '("llama3:latest"))           ;List of models
+    :models '("qwen2.5:latest"))           ;List of models
   )
 
 
@@ -507,7 +550,12 @@
   :ensure t
   :defer t
   :diminish
-  :init (global-flycheck-mode))
+  :init (global-flycheck-mode)
+  :config
+  (remove-hook 'text-mode-hook 'flyspell-mode)
+  (remove-hook 'org-mode-hook 'flyspell-mode)
+
+  )
 
 
 ;; which-key  https://emacs-china.org/t/doom/13654/5
@@ -534,25 +582,25 @@
 
 
 ;; ivy
-(use-package counsel
-  :after ivy
-  :diminish
-  :config
-  (counsel-mode)
-  (setq ivy-initial-inputs-alist nil)) ;; removes starting ^ regex in M-x
+;; (use-package counsel
+;;   :after ivy
+;;   :diminish
+;;   :config
+;;   (counsel-mode)
+;;   (setq ivy-initial-inputs-alist nil)) ;; removes starting ^ regex in M-x
 
-(use-package ivy
-  :bind
-  ;; ivy-resume resumes the last Ivy-based completion.
-  (("C-c C-r" . ivy-resume)
-   ("C-x B" . ivy-switch-buffer-other-window))
-  :diminish
-  :custom
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-count-format "(%d/%d) ")
-  (setq enable-recursive-minibuffers t)
-  :config
-  (ivy-mode))
+;; (use-package ivy
+;;   :bind
+;;   ;; ivy-resume resumes the last Ivy-based completion.
+;;   (("C-c C-r" . ivy-resume)
+;;    ("C-x B" . ivy-switch-buffer-other-window))
+;;   :diminish
+;;   :custom
+;;   (setq ivy-use-virtual-buffers t)
+;;   (setq ivy-count-format "(%d/%d) ")
+;;   (setq enable-recursive-minibuffers t)
+;;   :config
+;;   (ivy-mode))
 
 
 
@@ -610,7 +658,7 @@
   ;; (corfu-preview-current nil)    ;; Disable current candidate preview
   (corfu-preselect 'prompt)      ;; Preselect the prompt
   ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
-  ;;(corfu-scroll-margin 8)        ;; Use scroll margin
+  (corfu-scroll-margin 7)        ;; Use scroll margin
   ;;:bind
   ;; Enable Corfu only for certain modes.
   ;; :hook ((prog-mode . corfu-mode)
@@ -628,6 +676,11 @@
   ;;   (orderless-matching-styles '(orderless-literal orderless-regexp)))
 
   :config
+  (setq corfu-count 10)
+  (keymap-set corfu-map "RET" `( menu-item "" nil :filter
+                                 ,(lambda (&optional _)
+                                    (and (derived-mode-p 'eshell-mode 'comint-mode)
+                                         #'corfu-send))))
   (add-hook 'eshell-mode-hook
             (lambda ()
               (setq-local corfu-auto nil)
@@ -688,35 +741,6 @@
   )
 
 
-;; ;; sis
-;; ;;
-;; (use-package sis
-;;   ;; :hook
-;;   ;; enable the /context/ and /inline region/ mode for specific buffers
-;;   ;; (((text-mode prog-mode) . sis-context-mode)
-;;   ;;  ((text-mode prog-mode) . sis-inline-mode))
-
-;;   :config
-;;   ;; For MacOS
-;;   (sis-ism-lazyman-config
-
-;;    ;; English input source may be: "ABC", "US" or another one.
-;;    ;; "com.apple.keylayout.ABC"
-;;    "com.apple.keylayout.ABC"
-
-;;    ;; Other language input source: "rime", "sogou" or another one.
-;;    ;; "im.rime.inputmethod.Squirrel.Rime"
-;;    "im.rime.inputmethod.Squirrel.Hans")
-
-;;   ;; enable the /cursor color/ mode
-;;   (sis-global-cursor-color-mode t)
-;;   ;; enable the /respect/ mode
-;;   (sis-global-respect-mode t)
-;;   ;; enable the /context/ mode for all buffers
-;;   (sis-global-context-mode t)
-;;   ;; enable the /inline english/ mode for all buffers
-;;   (sis-global-inline-mode t)
-;;   )
 
 
 ;; (use-package! tabnine
@@ -778,3 +802,58 @@
 ;;   :ensure t ; only need to install it, embark loads it after consult if found
 ;;   :hook
 ;;   (embark-collect-mode . consult-preview-at-point-mode))
+
+
+;; centaur-tab  https://github.com/ema2159/centaur-tabs
+;; (use-package centaur-tabs
+;;   :demand
+;;   :config
+;;   (setq centaur-tabs-style "chamfer")
+;;   (setq centaur-tabs-set-icons t)
+;;   (setq centaur-tabs-gray-out-icons 'buffer)
+;;   ;;(setq centaur-tabs-set-bar 'left)
+;;   (centaur-tabs-mode t)
+;;   ;;(centaur-tabs-headline-match)
+;;   :bind
+;;   ("C-<prior>" . centaur-tabs-backward)
+;;   ("C-<next>" . centaur-tabs-forward))
+
+
+;; (defun centaur-tabs-buffer-groups ()
+;;   "`centaur-tabs-buffer-groups' control buffers' group rules.
+
+;; Group centaur-tabs with mode if buffer is derived from `eshell-mode' `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
+;; All buffer name start with * will group to \"Emacs\".
+;; Other buffer group by `centaur-tabs-get-group-name' with project name."
+;;   (list
+;;    (cond
+;;     ((or (string-equal "*" (substring (buffer-name) 0 1))
+;;          (memq major-mode '(magit-process-mode
+;;                             magit-status-mode
+;;                             magit-diff-mode
+;;                             magit-log-mode
+;;                             magit-file-mode
+;;                             magit-blob-mode
+;;                             magit-blame-mode
+;;                             )))
+;;      "Emacs")
+;;     ((derived-mode-p 'prog-mode)
+;;      "Editing")
+;;     ((derived-mode-p 'dired-mode)
+;;      "Dired")
+;;     ((memq major-mode '(helpful-mode
+;;                         help-mode))
+;;      "Help")
+;;     ((memq major-mode '(org-mode
+;;                         org-agenda-clockreport-mode
+;;                         org-src-mode
+;;                         org-agenda-mode
+;;                         org-beamer-mode
+;;                         org-indent-mode
+;;                         org-bullets-mode
+;;                         org-cdlatex-mode
+;;                         org-agenda-log-mode
+;;                         diary-mode))
+;;      "OrgMode")
+;;     (t
+;;      (centaur-tabs-get-group-name (current-buffer))))))

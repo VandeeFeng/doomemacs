@@ -423,24 +423,24 @@
 
 
 
-(defun add-space-after-org-link-pasted ()
-  "在粘贴 Org-mode 链接后自动添加一个英文空格。"
-  (let ((beg (region-beginning))
-        (end (region-end)))
-    (when (save-excursion
-            (goto-char beg)
-            (and (re-search-forward "\\[\\[.*?\\]\\[.*?\\]\\]" end t)
-                 (= (point) end))) ; 检查是否粘贴了链接
-      (goto-char end)
-      (insert " "))))
+;; (defun add-space-after-org-link-pasted ()
+;;   "在粘贴 Org-mode 链接后自动添加一个英文空格。"
+;;   (let ((beg (region-beginning))
+;;         (end (region-end)))
+;;     (when (save-excursion
+;;             (goto-char beg)
+;;             (and (re-search-forward "\\[\\[.*?\\]\\[.*?\\]\\]" end t)
+;;                  (= (point) end))) ; 检查是否粘贴了链接
+;;       (goto-char end)
+;;       (insert " "))))
 
-(define-minor-mode org-link-space-mode
-  "在 Org-mode 链接后自动添加空格的模式。"
-  :init-value nil
-  :lighter " OrgLinkSpace"
-  (if org-link-space-mode
-      (add-hook 'yank-end-hook 'add-space-after-org-link-pasted)
-    (remove-hook 'yank-end-hook 'add-space-after-org-link-pasted)))
+;; (define-minor-mode org-link-space-mode
+;;   "在 Org-mode 链接后自动添加空格的模式。"
+;;   :init-value nil
+;;   :lighter " OrgLinkSpace"
+;;   (if org-link-space-mode
+;;       (add-hook 'yank-end-hook 'add-space-after-org-link-pasted)
+;;     (remove-hook 'yank-end-hook 'add-space-after-org-link-pasted)))
 
-;; 在 Org-mode 中启用该功能
-(add-hook 'org-mode-hook 'org-link-space-mode)
+;; ;; 在 Org-mode 中启用该功能
+;; (add-hook 'org-mode-hook 'org-link-space-mode)
