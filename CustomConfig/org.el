@@ -421,6 +421,26 @@
 (auto-space-mode t)
 
 
+(defun my-paste-with-space-after-url ()
+  "Paste and add a space after a URL if present, and between Chinese and English characters."
+  (interactive)
+  (let ((orig-point (point)))
+    (evil-paste-from-register ?*)  ; Use * register for system clipboard on Mac
+    (let ((pasted-text (buffer-substring-no-properties orig-point (point))))
+      (when (string-match "\\(https?://\\)" pasted-text)
+        (insert " "))
+      ;; Apply Chinese-English spacing to the pasted text
+      (save-excursion
+        (goto-char orig-point)
+        (while (< (point) (point-max))
+          (add-space-between-chinese-and-english)
+          (forward-char))))))
+
+(evil-define-key 'insert evil-insert-state-map (kbd "C-v") 'my-paste-with-space-after-url)
+
+
+
+
 
 
 ;; (defun add-space-after-org-link-pasted ()

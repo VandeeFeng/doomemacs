@@ -62,6 +62,7 @@
 (package! pangu-spacing :disable t)
 ;;(package! org-mac-link :disable t)
 ;;(package! rime)
+;; (package! sis)
 (package! sis :disable t)
 ;; (package! perspective)
 ;; (package! evil-tutor)
@@ -80,3 +81,6 @@
 ;; (package! marginalia)
 ;; (package! embark)
 ;;(package! centaur-tabs)
+(package! nyan-mode)
+(package! aider
+  :recipe (:host github :repo "tninja/aider.el" :files ("aider.el")))

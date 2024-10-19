@@ -16,6 +16,16 @@
 ;; (load-theme 'atom-one-dark t)
 ;; (setq doom-theme 'atom-one-dark)
 
+;; modeline 里的彩虹猫！
+(use-package nyan-mode
+  :config
+  (nyan-mode 1)
+  (setq mode-line-format
+        (list
+         '(:eval (list (nyan-create)))
+         ))
+  )
+
 ;;
 ;;取消退出确认
 (setq confirm-kill-emacs nil)
@@ -38,6 +48,9 @@
 (global-visual-line-mode 1)  ;1 for on, 0 for off.
 
 (global-auto-revert-mode t)  ;; Automatically show changes if the file has changed
+
+;; 开启相对行号
+;; (setq display-line-numbers-type 'relative)  ;;不起作用
 ;;
 ;;
 ;;;;-------------------------------------------------------------------------------------------
@@ -108,7 +121,7 @@
 
 ;;-------------------------------------------------------------------------------------------
 ;;输入法 https://github.com/tumashu/pyim
-(setq default-input-method "system")
+;; (setq default-input-method "system")
 (global-set-key (kbd "C-\\") 'toggle-input-method)
 (use-package pyim
   :init
@@ -220,7 +233,8 @@
 ;;
 ;;-------------------------------------------------------------------------------------------
 ;;字体
-(setq doom-font (font-spec :family "霞鹜文楷等宽" :weight 'regular :size 14))
+;;(setq doom-font (font-spec :family "霞鹜文楷等宽" :weight 'regular :size 14))
+(setq doom-font (font-spec :family "Fira Code" :weight 'light :size 13))
 
 ;; ;; Plan A: 中文苹方, 英文Roboto Mono
 ;; (setq doom-font (font-spec :family "Roboto Mono" :size 22)
@@ -240,20 +254,34 @@
 
 ;;-------------------------------------------------------------------------------------------
 ;; 窗口大小设定
+;; 霞鹜文楷等宽窗口大小
+;; (if (not (eq window-system nil))
+;;     (progn
+;;       ;; top, left ... must be integer
+;;       (add-to-list 'default-frame-alist
+;;                    (cons 'top  (/ (x-display-pixel-height) 15))) ;; 调整数字设置距离上下左右的距离
+;;       (add-to-list 'default-frame-alist
+;;                    (cons 'left (/ (x-display-pixel-width) 6)))
+;;       (add-to-list 'default-frame-alist
+;;                    (cons 'height (/ (* 4 (x-display-pixel-height))
+;;                                     (* 6 (frame-char-height)))))
+;;       (add-to-list 'default-frame-alist
+;;                    (cons 'width (/ (* 4 (x-display-pixel-width))
+;;                                    (* 6 (frame-char-width)))))))
+
 (if (not (eq window-system nil))
     (progn
       ;; top, left ... must be integer
       (add-to-list 'default-frame-alist
-                   (cons 'top  (/ (x-display-pixel-height) 15))) ;; 调整数字设置距离上下左右的距离
+                   (cons 'top  (/ (x-display-pixel-height) 11))) ;; 调整数字设置距离上下左右的距离，数字越大越靠上
       (add-to-list 'default-frame-alist
-                   (cons 'left (/ (x-display-pixel-width) 6)))
+                   (cons 'left (/ (x-display-pixel-width) 6))) ;;数字越大越靠左
       (add-to-list 'default-frame-alist
-                   (cons 'height (/ (* 4 (x-display-pixel-height))
-                                    (* 6 (frame-char-height)))))
+                   (cons 'height (/ (* 5 (x-display-pixel-height))
+                                    (* 8 (frame-char-height)))))
       (add-to-list 'default-frame-alist
-                   (cons 'width (/ (* 4 (x-display-pixel-width))
-                                   (* 6 (frame-char-width)))))))
-
+                   (cons 'width (/ (* 7 (x-display-pixel-width))
+                                   (* 12 (frame-char-width)))))))
 
 
 ;; project
@@ -384,6 +412,15 @@
 ;; (global-set-key (kbd "C-c m") 'chinhant-grab-mac-link)
 
 
+
+;;aider
+;;
+(use-package aider
+  :config
+  (setq aider-args '("--model" "ollama/llama3.1"))
+  (setenv "OLLAMA_API_BASE" "http://127.0.0.1:11434")
+  (global-set-key (kbd "C-c a") 'aider-transient-menu)
+  )
 
 
 ;; gptel 设置默认ollama 模型
@@ -550,7 +587,7 @@
   :ensure t
   :defer t
   :diminish
-  :init (global-flycheck-mode)
+  :init (global-flycheck-mode t)
   :config
   (remove-hook 'text-mode-hook 'flyspell-mode)
   (remove-hook 'org-mode-hook 'flyspell-mode)
