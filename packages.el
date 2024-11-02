@@ -84,3 +84,4 @@
 (package! nyan-mode)
 (package! aider
   :recipe (:host github :repo "tninja/aider.el" :files ("aider.el")))
+(package! org-static-blog)

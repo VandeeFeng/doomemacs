@@ -172,7 +172,7 @@
                              (browse-url
                               ;; 我们直接使用 cpath，因为它已经是完整的 Calibre 链接
                               (format "calibre:%s" cpath))))
-  (setq org-export-with-toc nil) ;;禁止生成toc
+  ;; (setq org-export-with-toc nil) ;;禁止生成toc
   (org-link-set-parameters "zotero" :follow
                            (lambda (zpath)
                              (browse-url

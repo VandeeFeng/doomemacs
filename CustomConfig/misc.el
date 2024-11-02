@@ -94,23 +94,62 @@
                              (org-display-inline-images t))))
 
 
-;;https://github.com/gaoDean/org-remoteimg
 
+;;------------------------------------------------
+;;org-remoteimg
+;;-----------------------------------------
+;;https://github.com/gaoDean/org-remoteimg
+;;
 (use-package org-remoteimg
   :load-path "~/.config/doom/org-remoteimg"
   :config
-  ;; optional: set this to wherever you want the cache to be stored
-  (setq url-cache-directory "~/.config/emacs/.local/cache/url")
+  ;; Set the cache directory for remote images
+  (setq url-cache-directory "~/.config/emacs/.local/cache/url"
+        org-display-remote-inline-images 'skip) ;; Default to disabling the plugin
 
-  (setq org-display-remote-inline-images 'cache) ;; enable caching
+  ;; Toggle function for enabling or disabling org-remoteimg
+  (defun toggle-org-remoteimg ()
+    "Toggle the `org-remoteimg` package based on its current state."
+    (interactive)
+    (if (eq org-display-remote-inline-images 'skip)
+        (progn
+          (require 'org-remoteimg) ;; Ensure the plugin is loaded
+          (setq org-display-remote-inline-images 'cache) ;; Enable with caching
+          (message "org-remoteimg enabled."))
+      (setq org-display-remote-inline-images 'skip) ;; Disable plugin
+      (message "org-remoteimg disabled."))))
 
-  ;; or this if you don't want caching
-  ;; (setq org-display-remote-inline-images 'download)
+;; (use-package org-remoteimg
+;;   :load-path "~/.config/doom/org-remoteimg"
+;;   :config
+;;   ;; optional: set this to wherever you want the cache to be stored
+;;   (setq url-cache-directory "~/.config/emacs/.local/cache/url")
 
-  ;; or this if you want to disable this plugin
-  ;; (setq org-display-remote-inline-images 'skip)
+;;   (setq org-display-remote-inline-images 'cache) ;; enable caching
 
-  )
+;;   ;; or this if you don't want caching
+;;   ;; (setq org-display-remote-inline-images 'download)
+
+;;   ;; or this if you want to disable this plugin
+;;   (setq org-display-remote-inline-images 'skip)
+
+;;   ;; 定义一个布尔变量用于跟踪插件状态
+;;   (defvar org-remoteimg-enabled t
+;;     "Whether `org-remoteimg` is enabled or not.")
+
+;;   ;; 开关函数：启用或禁用 org-remoteimg 插件
+;;   (defun toggle-org-remoteimg ()
+;;     "Toggle the `org-remoteimg` package."
+;;     (interactive)
+;;     (if org-remoteimg-enabled
+;;         (progn
+;;           (setq org-display-remote-inline-images 'skip) ;; 禁用插件
+;;           (message "org-remoteimg disabled."))
+;;       (progn
+;;         (require 'org-remoteimg) ;; 确保插件加载
+;;         (setq org-display-remote-inline-images 'cache) ;; 启用并启用缓存
+;;         (message "org-remoteimg enabled.")))
+;;     (setq org-remoteimg-enabled (not org-remoteimg-enabled))))
 
 
 
@@ -121,7 +160,7 @@
 
 ;;-------------------------------------------------------------------------------------------
 ;;输入法 https://github.com/tumashu/pyim
-;; (setq default-input-method "system")
+(setq default-input-method "system")
 (global-set-key (kbd "C-\\") 'toggle-input-method)
 (use-package pyim
   :init
@@ -894,3 +933,154 @@
 ;;      "OrgMode")
 ;;     (t
 ;;      (centaur-tabs-get-group-name (current-buffer))))))
+
+
+;; org-mode realtime editor
+;;
+(defvar my-org-preview-file (expand-file-name "org-preview.html" "~/.config/emacs/.local/cache/")
+  "用于存放 Org 文件实时预览的固定 HTML 文件路径。")
+
+(defvar my-org-preview-active nil
+  "是否正在进行 Org 文件的实时预览。")
+
+(defun my-org-generate-html ()
+  "生成当前 Org 文件的 HTML 内容。"
+  (org-export-string-as (buffer-string) 'html t))
+
+(defun my-org-preview-in-browser ()
+  "更新浏览器中的 Org 文件预览。"
+  (let ((html (my-org-generate-html)))
+    (with-temp-file my-org-preview-file
+      (insert html))))
+
+(defun my-org-toggle-preview ()
+  "手动控制 Org 文件的 HTML 预览开关。"
+  (interactive)
+  (if my-org-preview-active
+      (progn
+        (setq my-org-preview-active nil)
+        (remove-hook 'after-save-hook 'my-org-preview-in-browser)
+        (message "Org 预览已停止。"))
+    (setq my-org-preview-active t)
+    (my-org-preview-in-browser)
+    (browse-url "file:///tmp/org-preview.html")
+    (add-hook 'after-save-hook 'my-org-preview-in-browser)
+    (message "Org 预览已启动。")))
+
+;; 绑定快捷键，例如 C-c p
+(map! :leader
+      :desc "Toggle Org Preview"
+      "o p" #'my-org-toggle-preview)
+
+
+;;----------------------------------------------
+;; org-blog
+;; ----------------------------------------------
+;; org-static-blog config
+(setq org-static-blog-publish-title "Vandee's Blog")
+(setq org-static-blog-publish-url "https://www.vandee.art/")
+(setq org-static-blog-publish-directory "~/vandee/org-blog/")
+(setq org-static-blog-posts-directory "~/vandee/org-blog/posts/")
+(setq org-static-blog-drafts-directory "~/vandee/org-blog/drafts/")
+(setq org-static-blog-enable-tags t)
+(setq org-export-with-toc t)
+(setq org-export-with-section-numbers nil)
+(setq org-static-blog-use-preview t)
+(setq org-static-blog-enable-og-tags t)
+;; (setq org-static-blog-rss-max-entries 30) ;; 设置 rss 获取文章的最大数量
+;; (setq org-static-blog-index-length 8) ;; 首页包含了最近几篇博客文章，显示在同一个页面上。首页上的条目数量可以通过设置 org-static-blog-index-length 来自定义。
+;;        <script src=\"https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vanilla-lazyload/17.3.1/lazyload.min.js\" type=\"application/javascript\" defer></script>
+;; <script src=\"https://testingcf.jsdelivr.net/gh/vandeefeng/gitbox@main/codes/blogsummary.js\"></script>
+(setq org-static-blog-page-header
+      "<meta name=\"author\" content=\"Vandee\">
+       <meta name=\"referrer\" content=\"no-referrer\">
+       <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+
+       <link rel=\"stylesheet\" href=\"assets/css/style.css\" type=\"text/css\"/>
+       <link rel=\"stylesheet\"
+             href=\"https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/6.0.0/css/all.min.css\"/>
+       <link rel=\"stylesheet\"
+             href=\"https://testingcf.jsdelivr.net/npm/@fancyapps/ui@4.0.12/dist/fancybox.css\"/>
+       <link rel=\"icon\" type=\"image/x-icon\" href=\"/static/favicon.ico\"/>
+
+       <script src=\"https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js\" defer></script>
+       <script src=\"https://testingcf.jsdelivr.net/npm/@fancyapps/ui@4.0.12/dist/fancybox.umd.js\" defer></script>
+       <script src=\"https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/pangu/4.0.7/pangu.min.js\" defer></script>
+       <script defer>
+         document.addEventListener(\"DOMContentLoaded\", function () {
+           pangu.spacingPage();
+         });
+       </script>
+
+       <script src=\"assets/js/app.js\" defer></script>
+       <script src=\"assets/js/copyCode.js\" defer></script>
+       <script src=\"assets/js/search.js\" defer></script>")
+
+
+;; Preamble for every page (e.g., navigation)
+(setq org-static-blog-page-preamble
+      (format "
+      <header>
+      <h1><a href=\"%s\">Vandee's Blog</a></h1>
+      <nav>
+      <a href=\"%s\">Home</a>
+      <a href=\"https://wiki.vandee.art\">Wiki</a>
+      <a href=\"archive.html\">Archive</a>
+      <a href=\"tags.html\">Tags</a>
+      <div id=\"search-container\">
+        <input type=\"text\" id=\"search-input\" placeholder=\"Search anywhere...\">
+        <i class=\"fas fa-search search-icon\"></i>
+      </div>
+      </nav>
+      </header>"
+              org-static-blog-publish-url
+              org-static-blog-publish-url))
+
+;; Postamble for every page (e.g., footer)
+(setq org-static-blog-page-postamble
+      "<div id=\"search-results\"></div>
+      <footer>
+        <p>© 2022-2024 Vandee. Some rights reserved.</p>
+        <div class=\"social-links\"></div>
+      </footer>
+
+      <a href=\"#top\" aria-label=\"go to top\" title=\"Go to Top (Alt + G)\"
+         class=\"top-link\" id=\"top-link\" accesskey=\"g\">
+         <i class=\"fa-solid fa-angle-up fa-2xl\"></i>
+      </a>
+
+      <script>
+        var mybutton = document.getElementById('top-link');
+        window.onscroll = function () {
+            if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+                mybutton.style.visibility = 'visible';
+                mybutton.style.opacity = '1';
+            } else {
+                mybutton.style.visibility = 'hidden';
+                mybutton.style.opacity = '0';
+            }
+        };
+      </script>")
+
+
+
+;; Content for the front page
+(setq org-static-blog-index-front-matter
+      "<h1>Vandee</h1>
+      <p>搞点摄影，喜欢音乐和艺术，保持热爱。</p>
+      <p>如果你也喜欢王小波、李志，我们就是朋友。</p>
+      <p>Stay foolish, Stay simple.</p>"
+      )
+
+(after! org-static-blog
+  (defun update-post-list (&rest _)
+    "Update the post list in post-list.json."
+    (let* ((post-list (mapcar 'org-static-blog-get-post-url
+                              (org-static-blog-get-post-filenames)))
+           (json-encoding-pretty-print t)
+           (json-data (json-encode post-list)))
+      (with-temp-file (concat org-static-blog-publish-directory "assets/post-list.json")
+        (insert json-data))
+      (message "Updated post-list.json")))
+
+  (advice-add 'org-static-blog-publish :after #'update-post-list))

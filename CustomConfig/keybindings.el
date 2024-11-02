@@ -12,13 +12,23 @@
 ;;----------------------------------------------------------------------------
 ;;
 
+;;
+;; 执行代码块
+(defun my-execute-src-block ()
+  "Execute the selected org code block and display a message."
+  (interactive)
+  (message "Executing selected org code block...")
+  (org-babel-execute-src-block))
+
+;;
+;; 在 normal 模式下将 9 键导航到行尾
 (defun move-to-end-of-line ()
   "Move the cursor to the end of the current line."
   (interactive)
   (end-of-line))
 
 ;; 在 normal 模式下将 9 键绑定到这个函数
-(map! :n "9" #'move-to-end-of-line)
+(map! :n "-" #'move-to-end-of-line)
 
 ;; https://stackoverflow.com/questions/3669511/the-function-to-show-current-files-full-path-in-mini-buffer#3669681
 (defun my-buffer-path ()
@@ -204,8 +214,16 @@ In the shell command, the file(s) will be substituted wherever a '%' is."
           (replace-match "#+begin_src")
           (re-search-forward "^```" nil t)
           (if (looking-back "^```")
-              (replace-match "#+end_src"))))))
+              (replace-match "#+end_src")))))
+  ;; 转换Markdown行内代码为Org-mode行内代码，添加空格
+  (goto-char (point-min))
+  (while (re-search-forward "`\\([^`]+?\\)`" nil t)
+    (replace-match (format " ~%s~ " (match-string 1))))
 
+  ;; 转换Markdown强调为Org-mode强调，添加空格
+  (goto-char (point-min))
+  (while (re-search-forward "\\*\\*\\(.*?\\)\\*\\*" nil t)
+    (replace-match (format " *%s* " (match-string 1)))))
 
 
 
@@ -241,6 +259,8 @@ In the shell command, the file(s) will be substituted wherever a '%' is."
   (vf/leader-keys
     "v" '(:ignore t :wk "Vandee")
     "v c" '(org-capture :wk "org-capture")
+    "v ." '(org-emphasize :wk "org-emphasize")
+    "v e" '(my-execute-src-block :wk "execute-src-block")
     "v r" '(org-roam-capture :wk "org-roam-capture")
     "v t" '(:ignore t :wk "TAGS")
     "v t s" '(org-set-tags-command :wk "插入TAGS")
