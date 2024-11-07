@@ -16,6 +16,186 @@
 ;; (load-theme 'atom-one-dark t)
 ;; (setq doom-theme 'atom-one-dark)
 
+;;--------------------------------------------
+;;自定义滚动
+;;--------------------------------------------
+;;
+
+;; (defvar expanded-cursor-size 10
+;;   "Number of lines to expand above and below current line for expanded cursor.")
+
+;; (defvar expanded-cursor-mode nil
+;;   "Whether expanded-cursor-mode is enabled.")
+
+;; (defvar cursor-region-overlay
+;;   (let ((overlay (make-overlay 1 1)))
+;;     (overlay-put overlay 'face '(:background "#333333"))
+;;     overlay)
+;;   "Overlay used to highlight the expanded cursor region.")
+
+;; (defun expanded-cursor-region ()
+;;   "Return the boundaries of expanded cursor region as (start . end) line numbers."
+;;   (let* ((current-line (line-number-at-pos))
+;;          (start-line (max 1 (- current-line expanded-cursor-size)))
+;;          (end-line (+ current-line expanded-cursor-size)))
+;;     (cons start-line end-line)))
+
+;; (defun expanded-cursor-region-at-pos (pos)
+;;   "Return the boundaries if cursor were at POS."
+;;   (let* ((current-line (line-number-at-pos pos))
+;;          (start-line (max 1 (- current-line expanded-cursor-size)))
+;;          (end-line (+ current-line expanded-cursor-size)))
+;;     (cons start-line end-line)))
+
+;; (defun expanded-cursor-will-hit-boundary-p (delta)
+;;   "Check if moving by DELTA lines will cause the expanded region to hit window boundaries."
+;;   (let* ((target-pos (save-excursion
+;;                        (forward-line delta)
+;;                        (point)))
+;;          (region (expanded-cursor-region-at-pos target-pos))
+;;          (start-line (car region))
+;;          (end-line (cdr region))
+;;          (window-start-line (line-number-at-pos (window-start)))
+;;          (window-end-line (line-number-at-pos (window-end))))
+;;     (or (< start-line window-start-line)
+;;         (> end-line window-end-line))))
+
+;; (defun move-expanded-cursor (delta)
+;;   "Move the expanded cursor by DELTA lines, with smart scrolling."
+;;   (when expanded-cursor-mode
+;;     (let* ((target-pos (save-excursion
+;;                          (forward-line delta)
+;;                          (point)))
+;;            (at-boundary (expanded-cursor-will-hit-boundary-p delta)))
+;;       (when (and target-pos (> target-pos 0))
+;;         (if at-boundary
+;;             ;; If we'll hit a boundary, scroll the window
+;;             (progn
+;;               (forward-line delta)
+;;               (if (< delta 0)
+;;                   (scroll-down 1)
+;;                 (scroll-up 1)))
+;;           ;; If we won't hit a boundary, just move the cursor
+;;           (forward-line delta))))))
+
+;; (defun highlight-expanded-cursor-region ()
+;;   "Highlight the expanded cursor region."
+;;   (when expanded-cursor-mode
+;;     (let* ((region (expanded-cursor-region))
+;;            (start-line (car region))
+;;            (end-line (cdr region))
+;;            (start-pos (save-excursion
+;;                         (goto-char (point-min))
+;;                         (forward-line (1- start-line))
+;;                         (point)))
+;;            (end-pos (save-excursion
+;;                       (goto-char (point-min))
+;;                       (forward-line (1- end-line))
+;;                       (end-of-line)
+;;                       (point))))
+;;       (move-overlay cursor-region-overlay start-pos end-pos))))
+
+;; (defun expanded-cursor-scroll-handler (event)
+;;   "Handle mouse scroll events for expanded cursor."
+;;   (interactive "e")
+;;   (when expanded-cursor-mode
+;;     (let ((delta (if (eq (event-basic-type event) 'wheel-up) -1 1)))
+;;       (move-expanded-cursor delta)
+;;       (highlight-expanded-cursor-region))))
+
+;; (define-minor-mode expanded-cursor-mode
+;;   "Toggle expanded cursor mode.
+;; When enabled, creates a virtual expanded cursor region (±10 lines around point).
+;; Mouse scrolling will move only the cursor while the region is fully visible,
+;; and will scroll the window only when the region would hit window boundaries."
+;;   :init-value nil
+;;   :lighter " ExpCursor"
+;;   :global t
+;;   (if expanded-cursor-mode
+;;       (progn
+;;         ;; Enable mode
+;;         (add-hook 'post-command-hook 'highlight-expanded-cursor-region)
+;;         ;; Override mouse wheel events
+;;         (global-set-key (vector 'mouse-4) 'expanded-cursor-scroll-handler)
+;;         (global-set-key (vector 'mouse-5) 'expanded-cursor-scroll-handler)
+;;         ;; Handle trackpad/touch scroll events
+;;         (global-set-key [wheel-up] 'expanded-cursor-scroll-handler)
+;;         (global-set-key [wheel-down] 'expanded-cursor-scroll-handler)
+;;         (highlight-expanded-cursor-region))
+;;     ;; Disable mode
+;;     (remove-hook 'post-command-hook 'highlight-expanded-cursor-region)
+;;     (delete-overlay cursor-region-overlay)
+;;     ;; Restore default mouse wheel behavior
+;;     (global-set-key (vector 'mouse-4) nil)
+;;     (global-set-key (vector 'mouse-5) nil)
+;;     (global-set-key [wheel-up] nil)
+;;     (global-set-key [wheel-down] nil)))
+
+;; ;; Optional: Add customization options
+;; (defcustom expanded-cursor-scroll-step 1
+;;   "Number of lines to scroll for each mouse wheel movement."
+;;   :type 'integer
+;;   :group 'expanded-cursor)
+
+;; ;; 定义缓冲区大小（上下各多少行）
+;; (defvar smooth-scroll-margin 10
+;;   "Number of lines of margin at the top and bottom of a window.")
+
+;; ;; 定义触摸板滚动的速度倍数
+;; (defvar touchpad-scroll-speed-multiplier 1
+;;   "Multiplier for touchpad scroll speed, applied only to touchpad events.")
+
+;; (defun get-scroll-margin ()
+;;   "Get the effective scroll margin, accounting for window size."
+;;   (min smooth-scroll-margin
+;;        (/ (window-body-height) 4)))
+
+;; (defun current-line-from-top ()
+;;   "Get current line number from top of window."
+;;   (count-lines (window-start) (point)))
+
+;; (defun current-line-from-bottom ()
+;;   "Get current line number from bottom of window."
+;;   (count-lines (point) (window-end)))
+
+;; (defun custom-scroll-up (&optional n)
+;;   "Scroll up command with margin awareness. N is number of lines to scroll."
+;;   (interactive)
+;;   (let* ((margin (get-scroll-margin))
+;;          (lines (or n 1)))
+;;     (if (>= (current-line-from-bottom) margin)
+;;         (forward-line lines)
+;;       (scroll-up lines))))
+
+;; (defun custom-scroll-down (&optional n)
+;;   "Scroll down command with margin awareness. N is number of lines to scroll."
+;;   (interactive)
+;;   (let* ((margin (get-scroll-margin))
+;;          (lines (or n 1)))
+;;     (if (>= (current-line-from-top) margin)
+;;         (forward-line (- lines))
+;;       (scroll-down lines))))
+
+;; ;; 定义触摸板事件处理函数，仅在触摸板滚动时应用平滑滚动
+;; (defun custom-touchpad-scroll (direction)
+;;   "Handle touchpad scroll with smooth scrolling. DIRECTION should be 'up or 'down."
+;;   (interactive)
+;;   (if (eq direction 'up)
+;;       (custom-scroll-down (* touchpad-scroll-speed-multiplier 1))
+;;     (custom-scroll-up (* touchpad-scroll-speed-multiplier 1))))
+
+;; ;; 绑定键位和触摸板事件，不绑定鼠标滚轮，保留其默认行为
+;; (map! :n "j" #'custom-scroll-up
+;;       :n "k" #'custom-scroll-down
+;;       ;; 保持鼠标滚轮的默认滚动
+;;       ;; 触摸板事件 - 使用平滑滚动
+;;       "<wheel-up>" (lambda () (interactive) (custom-touchpad-scroll 'up))
+;;       "<wheel-down>" (lambda () (interactive) (custom-touchpad-scroll 'down)))
+
+
+;;--------------------------------------------
+;; modeline 里的彩虹猫！
+;;--------------------------------------------
 ;; modeline 里的彩虹猫！
 (use-package nyan-mode
   :config
@@ -25,6 +205,7 @@
          '(:eval (list (nyan-create)))
          ))
   )
+
 
 ;;
 ;;取消退出确认
@@ -38,7 +219,6 @@
    (python . t)
    (js . t)
    (jupyter . t)))
-
 
 
 ;; ispell

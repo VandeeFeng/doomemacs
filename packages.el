@@ -82,6 +82,6 @@
 ;; (package! embark)
 ;;(package! centaur-tabs)
 (package! nyan-mode)
-(package! aider
-  :recipe (:host github :repo "tninja/aider.el" :files ("aider.el")))
+(package! aider :recipe (:host github :repo "tninja/aider.el" :files ("*.el")))
+
 (package! org-static-blog)

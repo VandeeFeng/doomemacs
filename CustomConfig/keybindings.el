@@ -194,10 +194,27 @@ In the shell command, the file(s) will be substituted wherever a '%' is."
   (save-excursion
     ;; 转换Markdown标题为Org-mode标题
     (goto-char (point-min))
-    (while (re-search-forward "^\s*\\(#+\\) \\(.*\\)" nil t)
-      (let ((level (length (match-string 1)))
-            (title1 (match-string 2)))
-        (replace-match (concat (make-string level ?*) " " title1)))))
+    (let ((in-src-block nil))
+      ;; 转换Markdown标题为Org-mode标题
+      (while (not (eobp))
+        (cond
+         ;; 检查是否进入代码块
+         ((looking-at "^#\\+begin_src\\|^```")
+          (setq in-src-block t)
+          (forward-line 1))
+         ;; 检查是否离开代码块
+         ((looking-at "^#\\+end_src\\|^```")
+          (setq in-src-block nil)
+          (forward-line 1))
+         ;; 如果不在代码块中，处理标题
+         ((and (not in-src-block)
+               (looking-at "^\s*\\(#+\\) \\(.*\\)"))
+          (let ((level (length (match-string 1)))
+                (title (match-string 2)))
+            (replace-match (concat (make-string level ?*) " " title)))
+          (forward-line 1))
+         ;; 其他情况，直接前进到下一行
+         (t (forward-line 1))))))
   ;; 转换Markdown链接为Org-mode链接,但是跳过图片链接
   (goto-char (point-min))
   (while (re-search-forward "\\[\\(.*?\\)\\](\\(.*?\\))" nil t)
@@ -208,29 +225,28 @@ In the shell command, the file(s) will be substituted wherever a '%' is."
         (replace-match (format "[[%s][%s]]" url title)))))
   ;; 转换Markdown代码块为Org-mode代码块
   (goto-char (point-min))
-  (while (re-search-forward "^```" nil t)
-    (if (looking-back "^```")
-        (progn
-          (replace-match "#+begin_src")
-          (re-search-forward "^```" nil t)
-          (if (looking-back "^```")
-              (replace-match "#+end_src")))))
-  ;; 转换Markdown行内代码为Org-mode行内代码，添加空格
-  (goto-char (point-min))
-  (while (re-search-forward "`\\([^`]+?\\)`" nil t)
-    (replace-match (format " ~%s~ " (match-string 1))))
-
-  ;; 转换Markdown强调为Org-mode强调，添加空格
-  (goto-char (point-min))
-  (while (re-search-forward "\\*\\*\\(.*?\\)\\*\\*" nil t)
-    (replace-match (format " *%s* " (match-string 1)))))
-
-
-
-
-
-
-
+  (let ((in-src-block nil))
+    (while (not (eobp))
+      (cond
+       ;; 检查是否进入代码块
+       ((looking-at "^#\\+begin_src")
+        (setq in-src-block t)
+        (forward-line 1))
+       ;; 检查是否离开代码块
+       ((looking-at "^#\\+end_src")
+        (setq in-src-block nil)
+        (forward-line 1))
+       ;; 如果不在代码块中且当前行不是标题，则处理粗体文本
+       ((not in-src-block)
+        (if (looking-at "^\\*+\\s-")
+            (forward-line 1)
+          (if (re-search-forward "\\(^\\|[^*]\\)\\*\\*\\([^*]+?\\)\\*\\*\\($\\|[^*]\\)" (line-end-position) t)
+              (progn
+                (replace-match "\\1 *\\2* \\3")
+                (goto-char (line-beginning-position)))
+            (forward-line 1))))
+       ;; 在代码块中，直接跳到下一行
+       (t (forward-line 1))))))
 
 
 ;;----------------------------------------------------------------------------
@@ -262,8 +278,8 @@ In the shell command, the file(s) will be substituted wherever a '%' is."
     "v ." '(org-emphasize :wk "org-emphasize")
     "v e" '(my-execute-src-block :wk "execute-src-block")
     "v r" '(org-roam-capture :wk "org-roam-capture")
-    "v t" '(:ignore t :wk "TAGS")
-    "v t s" '(org-set-tags-command :wk "插入TAGS")
+    "v t" '(vterm :wk "open vterm")
+    ;; "v t s" '(org-set-tags-command :wk "插入TAGS")
     "v a" '(:ignore t :wk "agenda and TODO")
     "v a t" '(org-todo :wk "编辑TODO状态")
     "v a i" '(org-insert-todo-heading :wk "插入任务项")
@@ -279,7 +295,7 @@ In the shell command, the file(s) will be substituted wherever a '%' is."
               (find-file "~/Vandee/pkm/org/Vandee.org"))
             :wk "go to Vandee")
 
-    "v T" '(my-tags-view :wk "my-tags-view")
+    ;; "v T" '(my-tags-view :wk "my-tags-view")
     "v d" '(my-insert-timestamp :wk "insert-timestamp")
     ;;"v r" '(my-remove-extra-spaces :wk "my-remove-extra-spaces")
     "v h" '(my-org-show-current-heading-tidily :wk "折叠其他标题")

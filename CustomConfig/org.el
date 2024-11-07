@@ -178,7 +178,7 @@
                              (browse-url
                               ;; we get the "zotero:"-less url, so we put it back.
                               (format "zotero:%s" zpath))))
-  (setq org-agenda-files '("~/Vandee/pkm/org/Journal.org" "~/Vandee/pkm/org/clips.org" "~/Vandee/pkm/org/projects.org"))
+  (setq org-agenda-files '("~/Vandee/pkm/org/Journal.org" "~/Vandee/pkm/org/Clips.org" "~/Vandee/pkm/org/Projects.org" "~/vandee/pkm/org/Tasks.org"))
   ;; (setq org-agenda-include-diary t)
   ;; (setq org-agenda-diary-file "~/Vandee/pkm/org/Journal.org")
   (setq org-directory "~/Vandee/pkm/org/")
@@ -189,9 +189,13 @@
   ;; (add-to-list 'org-capture-templates
   ;;              '("j" "Journal" entry (file+datetree  "~/Vandee/pkm/Journals/Journal.org")
   ;;                "* [[file:%<%Y>/%<%Y-%m-%d>.org][%<%Y-%m-%d>]] - %^{heading} %^g\n %?\n"))
+  ;; (add-to-list 'org-capture-templates
+  ;;              '("j" "Journal" entry (file+datetree "~/Vandee/pkm/org/Journal.org")
+  ;;                "* TODOs\n* Inbox\n- %?"))
   (add-to-list 'org-capture-templates
                '("j" "Journal" entry (file+datetree "~/Vandee/pkm/org/Journal.org")
-                 "* TODOs\n* Inbox\n- %?"))
+                 "* Inbox\n- %?"))
+
   (add-hook 'org-capture-after-finalize-hook
             (lambda ()
               (when (string= (org-capture-get :key) "j")
@@ -206,13 +210,13 @@
     (re-search-backward "\\* TODOs"))
   ;; task
   (add-to-list 'org-capture-templates '("t" "Tasks"))
-  (add-to-list 'org-capture-templates
-               '("tt" "Task" entry (file+function "~/Vandee/pkm/org/Journal.org"
-                                                  my-org-goto-last-todo-headline)
-                 "* TODO %i%? \n%T"))
   ;; (add-to-list 'org-capture-templates
-  ;;              '("t" "Task" entry (file+datetree "~/Vandee/pkm/Task.org")
-  ;;                "* TODO %^{任务名}\n%T\n%a\n"))
+  ;;              '("tt" "Task" entry (file+function "~/Vandee/pkm/org/Journal.org"
+  ;;                                                 my-org-goto-last-todo-headline)
+  ;;                "* TODO %i%? \n%T"))
+  (add-to-list 'org-capture-templates
+               '("tt" "Task" entry (file+headline "~/Vandee/pkm/org/Tasks.org" "Tasks")
+                 "* TODO %^{任务名}\n%T\n%a\n"))
   (add-to-list 'org-capture-templates
                '("tp" "Project" entry (file+headline "~/Vandee/pkm/org/Projects.org" "Projects")
                  "* TODO %^{任务名}\n%T"))
@@ -221,19 +225,19 @@
   (add-to-list 'org-capture-templates '("c" "Collections"))
   (add-to-list 'org-capture-templates
                '("cw" "Web Collections" item
-                 (file+headline "~/Vandee/pkm/org/websites.org" "实用")
+                 (file+headline "~/Vandee/pkm/org/Websites.org" "实用")
                  "Intro: %^{Intro}\n\nSource: %^{Source}\n%?"))
   (add-to-list 'org-capture-templates
                '("ct" "Tool Collections" item
-                 (file+headline "~/Vandee/pkm/org/tools.org" "实用")
+                 (file+headline "~/Vandee/pkm/org/Tools.org" "实用")
                  "Intro: %^{Intro}\n\nSource: %^{Source}\n%?"))
   (add-to-list 'org-capture-templates
                '("cc" "Clip Collections" entry
-                 (file+headline "~/Vandee/pkm/org/clips.org" "Clips")
+                 (file+headline "~/Vandee/pkm/org/Clips.org" "Clips")
                  "* %^{heading} %^g\n%T\n\nSource: %^{source}\n\n%?"))
   (add-to-list 'org-capture-templates
                '("cC" "Code Collections" entry
-                 (file+headline "~/Vandee/pkm/org/codes.org" "Codes")
+                 (file+headline "~/Vandee/pkm/org/Codes.org" "Codes")
                  "* %U - %^{Intro} %^G\nSource: %^{source}\n%?"))
 
 
